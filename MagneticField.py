@@ -66,6 +66,23 @@ class MagneticField:
         """
         self.filename = filename
 
+        if filename.endswith('.mat'):
+            loadHDF5(filename)
+        elif filename.endswith('.h5') or filename.endswith('.hdf5'):
+            loadHDF5(filename)
+        elif filename.endswith('.sdt'):
+            loadSDT(filename)
+        else:
+            raise Exception("Unrecognized file format: {0}.".format(filename))
+
+        self.meshR, self.meshZ = np.meshgrid(self.r, self.z)
+
+        self.interpBphi = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Bphi, kind='cubic')
+        self.interpBr   = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Br, kind='cubic')
+        self.interpBz   = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Bz, kind='cubic')
+
+
+    def loadHDF5(self, filename):
         # Convert array to string (MAT-files store strings as
         # arrays with 2 bytes per character)
         if filename.endswith('.mat'):
@@ -98,12 +115,34 @@ class MagneticField:
             try: self.separatrix = f['separatrix'][:,:]
             except KeyError: pass
 
-        self.meshR, self.meshZ = np.meshgrid(self.r, self.z)
 
-        self.interpBphi = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Bphi, kind='cubic')
-        self.interpBr   = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Br, kind='cubic')
-        self.interpBz   = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Bz, kind='cubic')
+    def loadSDT(self, filename):
+        f = SDTReader.loadSDT(filename)
 
+        self.Bphi = f['Bphi']
+        self.Br   = f['Br']
+        self.Bz   = f['Bz']
+        self.r    = f['r']
+        self.z    = f['z']
+
+        self.description = f['desc']
+        self.name        = f['name']
+
+        self.maxis = f['maxis']
+
+        try: self.verBphi = f['verBphi']
+        except KeyError: pass
+        try: self.verBr = f['verBr']
+        except KeyError: pass
+        try: self.verBz = f['verBz']
+        except KeyError: pass
+
+        try: self.Psi        = f['Psi']
+        except KeyError: pass
+        try: self.wall       = f['wall']
+        except KeyError: pass
+        try: self.separatrix = f['separatrix']
+        except KeyError: pass
     
     def writeFile(self):
         """
