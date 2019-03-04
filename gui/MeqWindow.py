@@ -42,15 +42,14 @@ class MeqWindow(QtWidgets.QMainWindow):
         self.bindEvents()
 
         # Check command-line arguments
-        if filename is not None:
-            if os.path.isfile(filename):
-                self.loadFile(filename)
+        if filename is not None and os.path.isfile(filename):
+            self.loadFile(filename)
 
     def bindEvents(self):
         # Browse
         self.ui.btnBrowse.clicked.connect(self.openFile)
 
-        # Metadata (TODO)
+        # Metadata
         self.ui.btnSaveMetadata.clicked.connect(self.saveMetadata)
 
         # Plot

@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BeamsizeMeasurement</class>
+ <widget class="QMainWindow" name="BeamsizeMeasurement">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>586</width>
+    <height>871</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Beam size measurement</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLineEdit" name="tbGreensFunction">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>471</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>161</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Green's function:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnBrowse">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>40</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="gbRadialProfile">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>345</y>
+      <width>561</width>
+      <height>371</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Full radial profile</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+    <property name="checked">
+     <bool>false</bool>
+    </property>
+    <widget class="QLabel" name="label_24">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>271</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Liberation Mono</family>
+      </font>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Negative profile values are&lt;br/&gt;interpreted as zero.&lt;/p&gt;&lt;p&gt;x &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; = Normalized radius&lt;br/&gt;THETA(a)&amp;nbsp; = 0 if x &amp;gt; a&lt;br/&gt;iTHETA(a) = 0 if x &amp;lt; a&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+    </widget>
+    <widget class="QPlainTextEdit" name="tbRadialProfile">
+     <property name="geometry">
+      <rect>
+       <x>290</x>
+       <y>30</y>
+       <width>261</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>Liberation Mono</family>
+      </font>
+     </property>
+     <property name="placeholderText">
+      <string>Python (numpy) expression</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="widgetRadialProfile" native="true">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>140</y>
+       <width>541</width>
+       <height>221</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QSlider" name="sliderBeamsize">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>195</y>
+      <width>561</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>100</number>
+    </property>
+    <property name="value">
+     <number>100</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksBelow</enum>
+    </property>
+    <property name="tickInterval">
+     <number>10</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblBeamsize_desc">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>175</y>
+      <width>111</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Beam size</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblBeamsize0">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>220</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblBeamsize20">
+    <property name="geometry">
+     <rect>
+      <x>115</x>
+      <y>220</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>20%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblBeamsize40">
+    <property name="geometry">
+     <rect>
+      <x>222</x>
+      <y>220</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>40%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblBeamsize60">
+    <property name="geometry">
+     <rect>
+      <x>332</x>
+      <y>220</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>60%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblBeamsize80">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>220</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>80%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblBeamsize100">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>220</y>
+      <width>41</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>100%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblBeamsize">
+    <property name="geometry">
+     <rect>
+      <x>366</x>
+      <y>175</y>
+      <width>201</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>100%</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblIntensity80">
+    <property name="geometry">
+     <rect>
+      <x>438</x>
+      <y>295</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>80%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblIntensity_desc">
+    <property name="geometry">
+     <rect>
+      <x>8</x>
+      <y>250</y>
+      <width>221</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Intensity threshold</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblIntensity100">
+    <property name="geometry">
+     <rect>
+      <x>528</x>
+      <y>295</y>
+      <width>41</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>100%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblIntensity40">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>295</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>40%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblIntensity">
+    <property name="geometry">
+     <rect>
+      <x>364</x>
+      <y>250</y>
+      <width>201</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0%</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+   <widget class="QSlider" name="sliderIntensity">
+    <property name="geometry">
+     <rect>
+      <x>8</x>
+      <y>270</y>
+      <width>561</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>0</number>
+    </property>
+    <property name="maximum">
+     <number>100</number>
+    </property>
+    <property name="value">
+     <number>20</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksBelow</enum>
+    </property>
+    <property name="tickInterval">
+     <number>10</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblIntensity0">
+    <property name="geometry">
+     <rect>
+      <x>8</x>
+      <y>295</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblIntensity20">
+    <property name="geometry">
+     <rect>
+      <x>113</x>
+      <y>295</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>20%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblIntensity60">
+    <property name="geometry">
+     <rect>
+      <x>330</x>
+      <y>295</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>60%</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="tbOverlay">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>745</y>
+      <width>471</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnBrowseOverlay">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>745</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Browse</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblOverlay_desc">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>725</y>
+      <width>67</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Overlay:</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="sliderOverlay">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>785</y>
+      <width>561</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>100</number>
+    </property>
+    <property name="value">
+     <number>25</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="tickPosition">
+     <enum>QSlider::TicksBelow</enum>
+    </property>
+    <property name="tickInterval">
+     <number>10</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblOverlay40">
+    <property name="geometry">
+     <rect>
+      <x>222</x>
+      <y>810</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>40%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblOverlay0">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>810</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblOverlay60">
+    <property name="geometry">
+     <rect>
+      <x>332</x>
+      <y>810</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>60%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblOverlay20">
+    <property name="geometry">
+     <rect>
+      <x>115</x>
+      <y>810</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>20%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblOverlay100">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>810</y>
+      <width>41</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>100%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblOverlay80">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>810</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>80%</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblBeamRadius">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>80</y>
+      <width>561</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>32</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>N/A</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>586</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

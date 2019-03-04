@@ -30,6 +30,8 @@ class Green:
         self.nr = 0
         self.nw = 0
 
+        self.format = None
+
         self.GAMMA  = np.array([])
         self.P      = np.array([])
         self.XI     = np.array([])
@@ -68,8 +70,8 @@ class Green:
 
             rowpixels, colpixels = 0, 0
             try:
-                rowpixels = f['rowpixels'][:,:][0,0]
-                colpixels = f['colpixels'][:,:][0,0]
+                rowpixels = int(f['rowpixels'][:,:][0,0])
+                colpixels = int(f['colpixels'][:,:][0,0])
             except:
                 rowpixels, colpixels = 0, 0
 
@@ -107,6 +109,21 @@ class Green:
                 raise Exception("Unrecognized format indicator of Green's function: '{0}'. Format: '{1}'.".format(c, self.format))
 
         return dim
+
+
+    def getParameterName(self, designation):
+        """
+        The parameter 'designation' may be any of the valid
+        function format specifiers, '1', '2', 'i', 'j', 'r' or 'w'.
+        """
+
+        if designation == '1':   return self._param1name
+        elif designation == '2': return self._param2name
+        elif designation == 'i': return 'i'
+        elif designation == 'j': return 'j'
+        elif designation == 'r': return 'r'
+        elif designation == 'w': return 'w'
+        else: raise Exception("Unrecognized format specifier: '{0}'.".format(designation))
 
 
     def getFormat(self): return self.format

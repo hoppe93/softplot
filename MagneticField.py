@@ -45,7 +45,7 @@ class MagneticField:
 
     
     def getPlasmaBoundaries(self):
-        r0 = self.maxis[0,0]
+        r0 = self.maxis[0]
 
         if self.separatrix is not None:
             sepR, _ = self.getSeparatrix()
@@ -67,11 +67,11 @@ class MagneticField:
         self.filename = filename
 
         if filename.endswith('.mat'):
-            loadHDF5(filename)
+            self.loadHDF5(filename)
         elif filename.endswith('.h5') or filename.endswith('.hdf5'):
-            loadHDF5(filename)
+            self.loadHDF5(filename)
         elif filename.endswith('.sdt'):
-            loadSDT(filename)
+            self.loadSDT(filename)
         else:
             raise Exception("Unrecognized file format: {0}.".format(filename))
 
@@ -99,7 +99,7 @@ class MagneticField:
 
             self.description = tos(f['desc'])
             self.name        = tos(f['name'])
-            self.maxis       = f['maxis'][:,:]
+            self.maxis       = f['maxis'][:,:][0]
 
             try: self.verBphi       = np.array(f['verBphi'][:,:])
             except KeyError: pass
