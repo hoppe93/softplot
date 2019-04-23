@@ -5,9 +5,12 @@ from ui.green import BeamsizeMeasurement_design
 import numpy as np
 import os
 
+from PIL import Image
+
 from PlotWindow import PlotWindow
 from Green import Green
 import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
 
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 from matplotlib.figure import Figure
@@ -60,8 +63,28 @@ class BeamsizeMeasurement(QtWidgets.QMainWindow):
         self.ui.sliderIntensity.valueChanged.connect(self.intensityChanged)
         self.ui.sliderOverlay.valueChanged.connect(self.updateOverlay)
 
+        self.ui.cbContour.toggled.connect(self.contourToggled)
+
+        self.ui.actionSave.triggered.connect(self.saveImage)
+        self.ui.actionExit.triggered.connect(self.exit)
+
     def closeEvent(self, event):
         self.exit()
+
+    def contourToggled(self):
+        enabled = self.ui.cbContour.isChecked()
+
+        self.ui.sliderIntensity.setEnabled(enabled)
+        self.ui.lblIntensity_desc.setEnabled(enabled)
+        self.ui.lblIntensity.setEnabled(enabled)
+        self.ui.lblIntensity0.setEnabled(enabled)
+        self.ui.lblIntensity20.setEnabled(enabled)
+        self.ui.lblIntensity40.setEnabled(enabled)
+        self.ui.lblIntensity60.setEnabled(enabled)
+        self.ui.lblIntensity80.setEnabled(enabled)
+        self.ui.lblIntensity100.setEnabled(enabled)
+
+        self.updateImage()
 
     def exit(self):
         self.plotWindow.close()
@@ -146,8 +169,10 @@ class BeamsizeMeasurement(QtWidgets.QMainWindow):
     def updateBeamRadiusLabel(self):
         v = self.ui.sliderBeamsize.value()
         r = self.radius[v]
+        p = int(np.round((v / self.radius.size) * 100.0))
 
         self.ui.lblBeamRadius.setText('{0:.1f} cm'.format(r))
+        self.ui.lblBeamsize.setText('{0}%'.format(p))
 
     def validateGreensFunction(self, gf):
         if gf.getFormat() != 'rij':
@@ -249,13 +274,6 @@ class BeamsizeMeasurement(QtWidgets.QMainWindow):
             img += self.GF[i,:,:] * f[i]
 
         img = img.T / np.amax(img)
-        threshold = self.ui.sliderIntensity.value() / 100.0
-        cntr = skimage.measure.find_contours(img.T, threshold)[0]
-
-        ipix, jpix = img.shape
-        i, j = cntr[:,0], cntr[:,1]
-        i = (i - ipix/2) / ipix * 2
-        j = (-j+ jpix/2) / jpix * 2
 
         if self.ui.gbRadialProfile.isChecked():
             self.imageHandle.set_data(img)
@@ -264,8 +282,18 @@ class BeamsizeMeasurement(QtWidgets.QMainWindow):
 
         if self.imageContoursHandle is not None:
             self.imageContoursHandle.remove()
+            self.imageContoursHandle = None
 
-        self.imageContoursHandle, = self.imageAx.plot(i, j, 'w--')
+        if self.ui.cbContour.isChecked():
+            threshold = self.ui.sliderIntensity.value() / 100.0
+            cntr = skimage.measure.find_contours(img.T, threshold)[0]
+
+            ipix, jpix = img.shape
+            i, j = cntr[:,0], cntr[:,1]
+            i = (i - ipix/2) / ipix * 2
+            j = (-j+ jpix/2) / jpix * 2
+
+            self.imageContoursHandle, = self.imageAx.plot(i, j, 'w--')
 
         self.plotWindow.drawSafe()
 
@@ -280,4 +308,24 @@ class BeamsizeMeasurement(QtWidgets.QMainWindow):
             a = float(self.ui.sliderOverlay.value()) / 100.0
             self.overlayHandle.set_alpha(a)
             self.plotWindow.drawSafe()
+
+    def saveImage(self):
+        """
+        Save the currently displayed SOFT image to a PNG file.
+        """
+        filename, _ = QFileDialog.getSaveFileName(self, caption='Save image', filter='Portable Network Graphics (*.png)')
+
+        if filename:
+            f = self.getRadialProfile()
+            img = np.zeros(self.GF._pixels)
+
+            for i in range(0, len(self.radius)):
+                img += self.GF[i,:,:] * f[i]
+
+            img = img.T / np.amax(img)
+
+            cmap = plt.get_cmap('GeriMap')
+            im = Image.fromarray(np.uint8(cmap(img)*255))
+            im.save(filename)
+
 
