@@ -2,11 +2,12 @@
 
 # Form implementation generated from reading ui file 'ui/green/BeamsizeMeasurement.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_BeamsizeMeasurement(object):
     def setupUi(self, BeamsizeMeasurement):
@@ -79,23 +80,23 @@ class Ui_BeamsizeMeasurement(object):
         self.lblBeamsize.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lblBeamsize.setObjectName("lblBeamsize")
         self.lblIntensity80 = QtWidgets.QLabel(self.centralwidget)
-        self.lblIntensity80.setGeometry(QtCore.QRect(438, 295, 31, 17))
+        self.lblIntensity80.setGeometry(QtCore.QRect(438, 320, 31, 17))
         self.lblIntensity80.setObjectName("lblIntensity80")
         self.lblIntensity_desc = QtWidgets.QLabel(self.centralwidget)
-        self.lblIntensity_desc.setGeometry(QtCore.QRect(8, 250, 221, 17))
+        self.lblIntensity_desc.setGeometry(QtCore.QRect(8, 275, 221, 17))
         self.lblIntensity_desc.setObjectName("lblIntensity_desc")
         self.lblIntensity100 = QtWidgets.QLabel(self.centralwidget)
-        self.lblIntensity100.setGeometry(QtCore.QRect(528, 295, 41, 17))
+        self.lblIntensity100.setGeometry(QtCore.QRect(528, 320, 41, 17))
         self.lblIntensity100.setObjectName("lblIntensity100")
         self.lblIntensity40 = QtWidgets.QLabel(self.centralwidget)
-        self.lblIntensity40.setGeometry(QtCore.QRect(220, 295, 31, 17))
+        self.lblIntensity40.setGeometry(QtCore.QRect(220, 320, 31, 17))
         self.lblIntensity40.setObjectName("lblIntensity40")
         self.lblIntensity = QtWidgets.QLabel(self.centralwidget)
-        self.lblIntensity.setGeometry(QtCore.QRect(364, 250, 201, 20))
+        self.lblIntensity.setGeometry(QtCore.QRect(364, 275, 201, 20))
         self.lblIntensity.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lblIntensity.setObjectName("lblIntensity")
         self.sliderIntensity = QtWidgets.QSlider(self.centralwidget)
-        self.sliderIntensity.setGeometry(QtCore.QRect(8, 270, 561, 24))
+        self.sliderIntensity.setGeometry(QtCore.QRect(8, 295, 561, 24))
         self.sliderIntensity.setMinimum(0)
         self.sliderIntensity.setMaximum(100)
         self.sliderIntensity.setProperty("value", 20)
@@ -104,13 +105,13 @@ class Ui_BeamsizeMeasurement(object):
         self.sliderIntensity.setTickInterval(10)
         self.sliderIntensity.setObjectName("sliderIntensity")
         self.lblIntensity0 = QtWidgets.QLabel(self.centralwidget)
-        self.lblIntensity0.setGeometry(QtCore.QRect(8, 295, 31, 17))
+        self.lblIntensity0.setGeometry(QtCore.QRect(8, 320, 31, 17))
         self.lblIntensity0.setObjectName("lblIntensity0")
         self.lblIntensity20 = QtWidgets.QLabel(self.centralwidget)
-        self.lblIntensity20.setGeometry(QtCore.QRect(113, 295, 31, 17))
+        self.lblIntensity20.setGeometry(QtCore.QRect(113, 320, 31, 17))
         self.lblIntensity20.setObjectName("lblIntensity20")
         self.lblIntensity60 = QtWidgets.QLabel(self.centralwidget)
-        self.lblIntensity60.setGeometry(QtCore.QRect(330, 295, 31, 17))
+        self.lblIntensity60.setGeometry(QtCore.QRect(330, 320, 31, 17))
         self.lblIntensity60.setObjectName("lblIntensity60")
         self.tbOverlay = QtWidgets.QLineEdit(self.centralwidget)
         self.tbOverlay.setGeometry(QtCore.QRect(10, 745, 471, 25))
@@ -155,14 +156,28 @@ class Ui_BeamsizeMeasurement(object):
         self.lblBeamRadius.setFont(font)
         self.lblBeamRadius.setAlignment(QtCore.Qt.AlignCenter)
         self.lblBeamRadius.setObjectName("lblBeamRadius")
+        self.cbContour = QtWidgets.QCheckBox(self.centralwidget)
+        self.cbContour.setGeometry(QtCore.QRect(10, 250, 281, 25))
+        self.cbContour.setChecked(True)
+        self.cbContour.setObjectName("cbContour")
         BeamsizeMeasurement.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(BeamsizeMeasurement)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 586, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 586, 24))
         self.menubar.setObjectName("menubar")
+        self.menuFile = QtWidgets.QMenu(self.menubar)
+        self.menuFile.setObjectName("menuFile")
         BeamsizeMeasurement.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(BeamsizeMeasurement)
         self.statusbar.setObjectName("statusbar")
         BeamsizeMeasurement.setStatusBar(self.statusbar)
+        self.actionSave = QtWidgets.QAction(BeamsizeMeasurement)
+        self.actionSave.setObjectName("actionSave")
+        self.actionExit = QtWidgets.QAction(BeamsizeMeasurement)
+        self.actionExit.setObjectName("actionExit")
+        self.menuFile.addAction(self.actionSave)
+        self.menuFile.addSeparator()
+        self.menuFile.addAction(self.actionExit)
+        self.menubar.addAction(self.menuFile.menuAction())
 
         self.retranslateUi(BeamsizeMeasurement)
         QtCore.QMetaObject.connectSlotsByName(BeamsizeMeasurement)
@@ -200,4 +215,9 @@ class Ui_BeamsizeMeasurement(object):
         self.lblOverlay100.setText(_translate("BeamsizeMeasurement", "100%"))
         self.lblOverlay80.setText(_translate("BeamsizeMeasurement", "80%"))
         self.lblBeamRadius.setText(_translate("BeamsizeMeasurement", "N/A"))
+        self.cbContour.setText(_translate("BeamsizeMeasurement", "Plot contour"))
+        self.menuFile.setTitle(_translate("BeamsizeMeasurement", "File"))
+        self.actionSave.setText(_translate("BeamsizeMeasurement", "Save as..."))
+        self.actionExit.setText(_translate("BeamsizeMeasurement", "Exit"))
+
 

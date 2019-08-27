@@ -257,7 +257,7 @@
     <property name="geometry">
      <rect>
       <x>438</x>
-      <y>295</y>
+      <y>320</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -270,7 +270,7 @@
     <property name="geometry">
      <rect>
       <x>8</x>
-      <y>250</y>
+      <y>275</y>
       <width>221</width>
       <height>17</height>
      </rect>
@@ -283,7 +283,7 @@
     <property name="geometry">
      <rect>
       <x>528</x>
-      <y>295</y>
+      <y>320</y>
       <width>41</width>
       <height>17</height>
      </rect>
@@ -296,7 +296,7 @@
     <property name="geometry">
      <rect>
       <x>220</x>
-      <y>295</y>
+      <y>320</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -309,7 +309,7 @@
     <property name="geometry">
      <rect>
       <x>364</x>
-      <y>250</y>
+      <y>275</y>
       <width>201</width>
       <height>20</height>
      </rect>
@@ -325,7 +325,7 @@
     <property name="geometry">
      <rect>
       <x>8</x>
-      <y>270</y>
+      <y>295</y>
       <width>561</width>
       <height>24</height>
      </rect>
@@ -353,7 +353,7 @@
     <property name="geometry">
      <rect>
       <x>8</x>
-      <y>295</y>
+      <y>320</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -366,7 +366,7 @@
     <property name="geometry">
      <rect>
       <x>113</x>
-      <y>295</y>
+      <y>320</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -379,7 +379,7 @@
     <property name="geometry">
      <rect>
       <x>330</x>
-      <y>295</y>
+      <y>320</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -551,6 +551,22 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
+   <widget class="QCheckBox" name="cbContour">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>250</y>
+      <width>281</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Plot contour</string>
+    </property>
+    <property name="checked">
+     <bool>true</bool>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -558,11 +574,30 @@
      <x>0</x>
      <y>0</y>
      <width>586</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save as...</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
