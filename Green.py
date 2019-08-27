@@ -20,7 +20,6 @@ class Green:
         self._param2name  = None
         self._pixels      = None
         self._r           = None
-        self._type        = None
         self._wavelengths = None
 
         self.n1 = 0
@@ -59,19 +58,23 @@ class Green:
             tos = lambda v : v[:].tostring().decode('utf-8')
 
         with h5py.File(filename, 'r') as f:
-            self._func        = f['func'][:,:]
-            self._param1      = f['param1'][:,:]
-            self._param2      = f['param2'][:,:]
+            self._func        = f['func'][:]
+            self._param1      = f['param1'][:]
+            self._param2      = f['param2'][:]
             self._param1name  = tos(f['param1name'])
             self._param2name  = tos(f['param2name'])
-            self._r           = f['r'][:,:]
+            self._r           = f['r'][:]
             self.format       = tos(f['type'])
-            self._wavelengths = f['wavelengths'][:,:]
+            self._wavelengths = f['wavelengths'][:]
 
             rowpixels, colpixels = 0, 0
             try:
-                rowpixels = int(f['rowpixels'][:,:][0,0])
-                colpixels = int(f['colpixels'][:,:][0,0])
+                if len(f['rowpixels'][:].shape) == 1:
+                    rowpixels = int(f['rowpixels'][:][0])
+                    colpixels = int(f['colpixels'][:][0])
+                else:
+                    rowpixels = int(f['rowpixels'][:][0,0])
+                    colpixels = int(f['colpixels'][:][0,0])
             except:
                 rowpixels, colpixels = 0, 0
 

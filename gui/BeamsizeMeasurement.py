@@ -111,7 +111,7 @@ class BeamsizeMeasurement(QtWidgets.QMainWindow):
             return
 
         # Store radii in centimeters
-        self.radius = (self.GF._r[0,:] - self.GF._r[0,0]) * 100.0
+        self.radius = (self.GF._r - self.GF._r[0]) * 100.0
         
         self.toggleEnabled(True)
         self.ui.sliderBeamsize.setMaximum(self.GF.nr-1)

@@ -112,7 +112,10 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
     
     def energyChanged(self):
         ei = self.ui.sliderEnergy.value()
-        self.ui.lblEnergy.setText('{0:.2f}'.format(self.GF._param1[0][ei]))
+        if len(self.GF._param1.shape) == 2:
+            self.ui.lblEnergy.setText('{0:.2f}'.format(self.GF._param1[0][ei]))
+        else:
+            self.ui.lblEnergy.setText('{0:.2f}'.format(self.GF._param1[ei]))
 
         f = self.getDistributionFunction()
         self.updateSuperPlot(f=f)
@@ -162,7 +165,11 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
             return
 
         self.toggleEnabled(True)
-        self.pitchAngles = np.abs(self.GF._param2[0])
+        if len(self.GF._param2.shape) == 2:
+            self.pitchAngles = np.abs(self.GF._param2[0])
+        else:
+            self.pitchAngles = np.abs(self.GF._param2)
+
         self.cosPitchAngles = np.cos(self.pitchAngles)
 
         # Sum all pixels of each image
@@ -212,7 +219,10 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         return True
 
     def setupEnergySlider(self):
-        vmin, vmax, vn = self.GF._param1[0][0], self.GF._param1[0][-1], self.GF._param1[0].size
+        if len(self.GF._param1.shape) == 2:
+            vmin, vmax, vn = self.GF._param1[0][0], self.GF._param1[0][-1], self.GF._param1[0].size
+        else:
+            vmin, vmax, vn = self.GF._param1[0], self.GF._param1[-1], self.GF._param1.size
 
         if self.GF.getParameterName('1') == 'gamma':
             self.ui.lblREEnergy.setText('Runaway energy (mc²)')

@@ -35,6 +35,9 @@ class Orbits:
     def orbits(self):
         return self.ORBITS
         
+    def __getitem__(self, oindex):
+        return self.getOrbitByIndex(oindex=oindex)
+
     def getOrbitByIndex(self, oindex=0):
         if oindex >= self.NORBITS:
             raise IndexError('Requested orbit index is >= number of orbits')
