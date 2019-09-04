@@ -67,6 +67,8 @@ class Green:
             self.format       = tos(f['type'])
             self._wavelengths = f['wavelengths'][:]
 
+            self.stokesparams = True if f['stokesparams'][0]==1 else False
+
             rowpixels, colpixels = 0, 0
             try:
                 if len(f['rowpixels'][:].shape) == 1:
@@ -100,6 +102,9 @@ class Green:
         Green's function.
         """
         dim = ()
+
+        if self.stokesparams:
+            dim = (4,)
 
         for c in self.format:
             if c == '1':   dim = dim + (self.n1,)
@@ -141,11 +146,13 @@ class Green:
         if self._param1name == 'gamma':
             if self._param2name == 'ppar': self._gammaPpar(self._param1, self._param2)
             elif self._param2name == 'thetap': self._gammaThetap(self._param1, self._param2)
+            elif self._param2name == 'ithetap': self._gammaThetap(self._param1, self._param2)
             elif self._param2name == 'xi': self._gammaXi(self._param1, self._param2)
             else: raise Exception("Invalid combination of momentum-space parameters: '{0}' and '{1}'.".format(self._param1name, self._param2name))
         elif self._param1name == 'p':
             if self._param2name == 'ppar': self._pPpar(self._param1, self._param2)
             elif self._param2name == 'thetap': self._pThetap(self._param1, self._param2)
+            elif self._param2name == 'ithetap': self._pThetap(self._param1, self._param2)
             elif self._param2name == 'xi': self._pXi(self._param1, self._param2)
             else: raise Exception("Invalid combination of momentum-space parameters: '{0}' and '{1}'.".format(self._param1name, self._param2name))
         elif self._param1name == 'ppar':
@@ -153,14 +160,16 @@ class Green:
             elif self._param2name == 'p': self._pPpar(self._param2, self._param1)
             elif self._param2name == 'pperp': self._pparPperp(self._param1, self._param2)
             elif self._param2name == 'thetap': self._pparThetap(self._param1, self._param2)
+            elif self._param2name == 'ithetap': self._pparThetap(self._param1, self._param2)
             elif self._param2name == 'xi': self._pparXi(self._param1, self._param2)
             else: raise Exception("Invalid combination of momentum-space parameters: '{0}' and '{1}'.".format(self._param1name, self._param2name))
         elif self._param1name == 'pperp':
             if self._param2name == 'ppar': self._pparPperp(self._param2, self._param1)
             elif self._param2name == 'thetap': self._pperpThetap(self._param1, self._param2)
+            elif self._param2name == 'ithetap': self._pperpThetap(self._param1, self._param2)
             elif self._param2name == 'xi': self._pperpXi(self._param1, self._param2)
             else: raise Exception("Invalid combination of momentum-space parameters: '{0}' and '{1}'.".format(self._param1name, self._param2name))
-        elif self._param1name == 'thetap':
+        elif self._param1name == 'thetap' or self._param2name == 'ithetap':
             if self._param2name == 'gamma': self._gammaThetap(self._param2, self._param1)
             elif self._param2name == 'p': self._pThetap(self._param2, self._param1)
             elif self._param2name == 'ppar': self._pparThetap(self._param2, self._param1)

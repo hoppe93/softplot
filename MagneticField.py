@@ -88,7 +88,11 @@ class MagneticField:
         if filename.endswith('.mat'):
             tos = lambda v : "".join(map(chr, v[:,:][:,0].tolist()))
         else:
-            tos = lambda v : v[:].tostring().decode('utf-8')
+            def tos(v):
+                if v.dtype == 'O':
+                    return v[:][0]
+                else:
+                    return v[:].tostring().decode('utf-8')
 
         with h5py.File(filename, 'r') as f:
             self.Bphi       = np.array(f['Bphi'][:,:])
@@ -101,11 +105,11 @@ class MagneticField:
             self.name        = tos(f['name'])
             self.maxis       = f['maxis'][:,:][0]
 
-            try: self.verBphi       = np.array(f['verBphi'][:,:])
+            try: self.verBphi       = np.array(f['verBphi'][:])
             except KeyError: pass
-            try: self.verBr         = np.array(f['verBr'][:,:])
+            try: self.verBr         = np.array(f['verBr'][:])
             except KeyError: pass
-            try: self.verBz         = np.array(f['verBz'][:,:])
+            try: self.verBz         = np.array(f['verBz'][:])
             except KeyError: pass
 
             try: self.Psi        = f['Psi'][:,:]
