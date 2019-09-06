@@ -4,10 +4,12 @@ from PyQt5.QtWidgets import QFileDialog
 from ui.green import SingleEnergyPitchIJ_design
 import numpy as np
 import os
+import string, random
 
 from PlotWindow import PlotWindow
 
 from Green import Green
+from GeriMap import registerGeriMap
 
 from matplotlib.backends.qt_compat import QtCore, QtWidgets
 from matplotlib.backends.backend_qt5agg import FigureCanvas
@@ -48,6 +50,8 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
 
         self.bindEvents()
 
+        self.gerimap, _ = registerGeriMap(None)
+
         if filename is not None and os.path.isfile(filename):
             self.loadFile(filename)
 
@@ -62,6 +66,8 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         self.ui.sliderEnergy.valueChanged.connect(self.energyChanged)
         self.ui.sliderPitchAngle.valueChanged.connect(self.pitchAngleParameterChanged)
         self.ui.sliderOverlay.valueChanged.connect(self.updateOverlay)
+
+        self.ui.cbUnderlay.toggled.connect(self.toggleOverlayType)
 
     def closeEvent(self, event):
         self.exit()
@@ -193,13 +199,9 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         self.ui.tbOverlay.setText(filename)
         self.overlay = mpimg.imread(filename)
 
-        if self.overlayHandle is not None:
-            self.overlayHandle.remove()
-            
-        a = (self.ui.sliderOverlay.value()) / 100.0
-        self.overlayHandle = self.imageAx.imshow(self.overlay, alpha=a, extent=[-1,1,-1,1])
-        self.plotWindow.drawSafe()
-        
+        self.setupOverlay()
+
+
     def openFile(self):
         filename, _ = QFileDialog.getOpenFileName(parent=self, caption="Open SOFT Green's function file", filter="SOFT Green's function (*.mat *.h5 *.hdf5);;All files (*.*)")
 
@@ -240,7 +242,7 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
 
         fcolor = self.plotWindow.figure.patch.get_facecolor()
 
-        self.plotWindow.canvas.print_figure(filename, bbox_inches='tight', pad_inches=0)
+        self.plotWindow.canvas.print_figure(filename, bbox_inches='tight', pad_inches=0, dpi=300)
 
 
     def saveSuper(self, filename=None):
@@ -297,10 +299,14 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
 
     
     def setupImage(self):
-        self.imageAx = self.plotWindow.figure.add_subplot(111)
+        lbl = ''.join(random.choices(string.ascii_uppercase, k=4))
+        self.imageAx = self.plotWindow.figure.add_subplot(111, label=lbl)
+
+        if self.ui.cbUnderlay.isChecked() and self.overlayHandle is not None:
+            self.setupOverlay()
 
         dummy = np.zeros(self.GF._pixels)
-        self.imageHandle = self.imageAx.imshow(dummy, cmap='GeriMap', interpolation=None, clim=(0, 1), extent=[-1,1,-1,1])
+        self.imageHandle = self.imageAx.imshow(dummy, cmap=self.gerimap, interpolation=None, clim=(0, 1), extent=[-1,1,-1,1], zorder=1000)
         self.imageAx.get_xaxis().set_visible(False)
         self.imageAx.get_yaxis().set_visible(False)
 
@@ -310,10 +316,47 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         self.plotWindow.drawSafe()
 
 
+    def setupOverlay(self):
+        if self.overlayHandle is not None:
+            self.overlayHandle.remove()
+            
+        a = 1
+        if not self.ui.cbUnderlay.isChecked():
+            a = (self.ui.sliderOverlay.value()) / 100.0
+
+        self.overlayHandle = self.imageAx.imshow(self.overlay, alpha=a, extent=[-1,1,-1,1], zorder=0)
+        self.plotWindow.drawSafe()
+
+
+    def toggleOverlayType(self):
+        ic = self.ui.cbUnderlay.isChecked()
+        if not ic:
+            self.gerimap, _ = registerGeriMap(None)
+        else:
+            self.gerimap, _ = registerGeriMap(transparencyThreshold=0.25)
+
+        self.ui.sliderOverlay.setEnabled(not ic)
+        self.ui.lblOverlayMin.setEnabled(not ic)
+        self.ui.lblOverlay25.setEnabled(not ic)
+        self.ui.lblOverlay50.setEnabled(not ic)
+        self.ui.lblOverlay75.setEnabled(not ic)
+        self.ui.lblOverlayMax.setEnabled(not ic)
+
+        self.setupImage()
+
+        f = self.getDistributionFunction()
+        self.updateSuperPlot(f=f)
+        self.updateImage(f=f)
+
+
     def updateOverlay(self):
         if self.overlayHandle is not None:
-            a = float(self.ui.sliderOverlay.value()) / 100.0
-            self.overlayHandle.set_alpha(a)
+            if self.ui.cbUnderlay.isChecked():
+                self.overlayHandle.set_alpha(1)
+            else:
+                a = float(self.ui.sliderOverlay.value()) / 100.0
+                self.overlayHandle.set_alpha(a)
+
             self.plotWindow.drawSafe()
 
 
