@@ -103,7 +103,7 @@ class MagneticField:
 
             self.description = tos(f['desc'])
             self.name        = tos(f['name'])
-            self.maxis       = f['maxis'][:,:][0]
+            self.maxis       = f['maxis'][:]
 
             try: self.verBphi       = np.array(f['verBphi'][:])
             except KeyError: pass
