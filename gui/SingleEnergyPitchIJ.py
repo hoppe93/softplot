@@ -13,6 +13,9 @@ from matplotlib.backends.qt_compat import QtCore, QtWidgets
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.image as mpimg
+import matplotlib.ticker
+
+matplotlib.rcParams.update({'font.size': 14})
 
 class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
     def __init__(self, argv):
@@ -52,6 +55,8 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
     def bindEvents(self):
         self.ui.btnBrowse.clicked.connect(self.openFile)
         self.ui.btnBrowseOverlay.clicked.connect(self.openOverlay)
+        self.ui.btnSaveImage.clicked.connect(self.saveImage)
+        self.ui.btnSaveSuper.clicked.connect(self.saveSuper)
 
         self.ui.sliderEnergy.valueChanged.connect(self.energyChanged)
         self.ui.sliderPitchAngle.valueChanged.connect(self.pitchAngleParameterChanged)
@@ -74,14 +79,14 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         self.superPlotLayout.addWidget(self.superPlotCanvas)
 
         self.superPlotAx = self.superPlotCanvas.figure.subplots()
-        self.superPlotHandle, = self.superPlotAx.plot(self.pitchAngles, z)
+        self.superPlotHandle, = self.superPlotAx.plot(self.pitchAngles, z, linewidth=2)
         self.superPlotDomHandle, = self.superPlotAx.plot([0, 0], [0, ymax], 'k--')
 
         self.superPlotAx.set_xlim([self.pitchAngles[0], self.pitchAngles[-1]])
         self.superPlotAx.set_ylim([0, ymax])
         self.superPlotAx.get_yaxis().set_ticks([])
 
-        self.superPlotAx.set_xlabel(r'$\theta_{\rm p}$ (rad)')
+        self.superPlotAx.set_xlabel(r'$\theta_{\rm p}\ \mathrm{(rad)}$')
         self.superPlotAx.set_ylabel(r'$f(\theta_{\rm p}) / f_{\rm max}$')
 
         self.superPlotCanvas.figure.tight_layout(pad=2.5)
@@ -217,6 +222,33 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
             return False
 
         return True
+
+
+    def saveImage(self):
+        filename, _ = QFileDialog.getSaveFileName(self, caption='Save synthetic image', filter='Portable Document Form (*.pdf);;Portable Network Graphics (*.png);;Encapsulated Post-Script (*.eps);;Scalable Vector Graphics (*.svg)')
+
+        if not filename:
+            return
+
+        self.imageAx.set_axis_off()
+        self.plotWindow.figure.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
+
+        self.imageAx.get_xaxis().set_major_locator(matplotlib.ticker.NullLocator())
+        self.imageAx.get_yaxis().set_major_locator(matplotlib.ticker.NullLocator())
+
+        fcolor = self.plotWindow.figure.patch.get_facecolor()
+
+        self.plotWindow.canvas.print_figure(filename, bbox_inches='tight', pad_inches=0)
+
+
+    def saveSuper(self):
+        filename, _ = QFileDialog.getSaveFileName(self, caption='Save super particle',  filter='Portable Document Form (*.pdf);;Portable Network Graphics (*.png);;Encapsulated Post-Script (*.eps);;Scalable Vector Graphics (*.svg)')
+
+        if not filename:
+            return
+
+        self.superPlotCanvas.print_figure(filename, bbox_inches='tight')
+
 
     def setupEnergySlider(self):
         if len(self.GF._param1.shape) == 2:

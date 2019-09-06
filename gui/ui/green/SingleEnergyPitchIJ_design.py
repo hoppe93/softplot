@@ -2,18 +2,20 @@
 
 # Form implementation generated from reading ui file 'ui/green/SingleEnergyPitchIJ.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_SingleEnergyPitchIJ(object):
     def setupUi(self, SingleEnergyPitchIJ):
         SingleEnergyPitchIJ.setObjectName("SingleEnergyPitchIJ")
-        SingleEnergyPitchIJ.resize(550, 700)
-        SingleEnergyPitchIJ.setMinimumSize(QtCore.QSize(550, 700))
-        SingleEnergyPitchIJ.setMaximumSize(QtCore.QSize(550, 700))
+        SingleEnergyPitchIJ.resize(550, 740)
+        SingleEnergyPitchIJ.setMinimumSize(QtCore.QSize(550, 740))
+        SingleEnergyPitchIJ.setMaximumSize(QtCore.QSize(550, 740))
         self.centralwidget = QtWidgets.QWidget(SingleEnergyPitchIJ)
         self.centralwidget.setObjectName("centralwidget")
         self.sliderEnergy = QtWidgets.QSlider(self.centralwidget)
@@ -87,17 +89,17 @@ class Ui_SingleEnergyPitchIJ(object):
         self.lblDomPitch.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lblDomPitch.setObjectName("lblDomPitch")
         self.lblOverlay = QtWidgets.QLabel(self.centralwidget)
-        self.lblOverlay.setGeometry(QtCore.QRect(20, 550, 67, 17))
+        self.lblOverlay.setGeometry(QtCore.QRect(20, 590, 67, 17))
         self.lblOverlay.setObjectName("lblOverlay")
         self.tbOverlay = QtWidgets.QLineEdit(self.centralwidget)
-        self.tbOverlay.setGeometry(QtCore.QRect(20, 570, 431, 25))
+        self.tbOverlay.setGeometry(QtCore.QRect(20, 610, 431, 25))
         self.tbOverlay.setReadOnly(True)
         self.tbOverlay.setObjectName("tbOverlay")
         self.btnBrowseOverlay = QtWidgets.QPushButton(self.centralwidget)
-        self.btnBrowseOverlay.setGeometry(QtCore.QRect(450, 570, 89, 25))
+        self.btnBrowseOverlay.setGeometry(QtCore.QRect(450, 610, 89, 25))
         self.btnBrowseOverlay.setObjectName("btnBrowseOverlay")
         self.sliderOverlay = QtWidgets.QSlider(self.centralwidget)
-        self.sliderOverlay.setGeometry(QtCore.QRect(20, 604, 511, 24))
+        self.sliderOverlay.setGeometry(QtCore.QRect(20, 644, 511, 24))
         self.sliderOverlay.setMaximum(100)
         self.sliderOverlay.setProperty("value", 50)
         self.sliderOverlay.setOrientation(QtCore.Qt.Horizontal)
@@ -105,24 +107,30 @@ class Ui_SingleEnergyPitchIJ(object):
         self.sliderOverlay.setTickInterval(5)
         self.sliderOverlay.setObjectName("sliderOverlay")
         self.lblOverlayMin = QtWidgets.QLabel(self.centralwidget)
-        self.lblOverlayMin.setGeometry(QtCore.QRect(20, 630, 67, 17))
+        self.lblOverlayMin.setGeometry(QtCore.QRect(20, 670, 67, 17))
         self.lblOverlayMin.setObjectName("lblOverlayMin")
         self.lblOverlayMax = QtWidgets.QLabel(self.centralwidget)
-        self.lblOverlayMax.setGeometry(QtCore.QRect(470, 630, 67, 17))
+        self.lblOverlayMax.setGeometry(QtCore.QRect(470, 670, 67, 17))
         self.lblOverlayMax.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.lblOverlayMax.setObjectName("lblOverlayMax")
         self.lblOverlay25 = QtWidgets.QLabel(self.centralwidget)
-        self.lblOverlay25.setGeometry(QtCore.QRect(140, 630, 67, 17))
+        self.lblOverlay25.setGeometry(QtCore.QRect(140, 670, 67, 17))
         self.lblOverlay25.setObjectName("lblOverlay25")
         self.lblOverlay50 = QtWidgets.QLabel(self.centralwidget)
-        self.lblOverlay50.setGeometry(QtCore.QRect(262, 630, 67, 17))
+        self.lblOverlay50.setGeometry(QtCore.QRect(262, 670, 67, 17))
         self.lblOverlay50.setObjectName("lblOverlay50")
         self.lblOverlay75 = QtWidgets.QLabel(self.centralwidget)
-        self.lblOverlay75.setGeometry(QtCore.QRect(390, 630, 67, 17))
+        self.lblOverlay75.setGeometry(QtCore.QRect(390, 670, 67, 17))
         self.lblOverlay75.setObjectName("lblOverlay75")
+        self.btnSaveImage = QtWidgets.QPushButton(self.centralwidget)
+        self.btnSaveImage.setGeometry(QtCore.QRect(20, 550, 151, 27))
+        self.btnSaveImage.setObjectName("btnSaveImage")
+        self.btnSaveSuper = QtWidgets.QPushButton(self.centralwidget)
+        self.btnSaveSuper.setGeometry(QtCore.QRect(390, 550, 151, 27))
+        self.btnSaveSuper.setObjectName("btnSaveSuper")
         SingleEnergyPitchIJ.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(SingleEnergyPitchIJ)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 550, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 550, 24))
         self.menubar.setObjectName("menubar")
         SingleEnergyPitchIJ.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(SingleEnergyPitchIJ)
@@ -154,4 +162,5 @@ class Ui_SingleEnergyPitchIJ(object):
         self.lblOverlay25.setText(_translate("SingleEnergyPitchIJ", "25%"))
         self.lblOverlay50.setText(_translate("SingleEnergyPitchIJ", "50%"))
         self.lblOverlay75.setText(_translate("SingleEnergyPitchIJ", "75%"))
-
+        self.btnSaveImage.setText(_translate("SingleEnergyPitchIJ", "Save image"))
+        self.btnSaveSuper.setText(_translate("SingleEnergyPitchIJ", "Save super-particle"))
