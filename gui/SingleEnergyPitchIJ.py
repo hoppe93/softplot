@@ -57,6 +57,7 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         self.ui.btnBrowseOverlay.clicked.connect(self.openOverlay)
         self.ui.btnSaveImage.clicked.connect(self.saveImage)
         self.ui.btnSaveSuper.clicked.connect(self.saveSuper)
+        self.ui.btnSaveBoth.clicked.connect(self.saveBoth)
 
         self.ui.sliderEnergy.valueChanged.connect(self.energyChanged)
         self.ui.sliderPitchAngle.valueChanged.connect(self.pitchAngleParameterChanged)
@@ -224,8 +225,9 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         return True
 
 
-    def saveImage(self):
-        filename, _ = QFileDialog.getSaveFileName(self, caption='Save synthetic image', filter='Portable Document Form (*.pdf);;Portable Network Graphics (*.png);;Encapsulated Post-Script (*.eps);;Scalable Vector Graphics (*.svg)')
+    def saveImage(self, filename=None):
+        if filename is None:
+            filename, _ = QFileDialog.getSaveFileName(self, caption='Save synthetic image', filter='Portable Document Form (*.pdf);;Portable Network Graphics (*.png);;Encapsulated Post-Script (*.eps);;Scalable Vector Graphics (*.svg)')
 
         if not filename:
             return
@@ -241,13 +243,34 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         self.plotWindow.canvas.print_figure(filename, bbox_inches='tight', pad_inches=0)
 
 
-    def saveSuper(self):
-        filename, _ = QFileDialog.getSaveFileName(self, caption='Save super particle',  filter='Portable Document Form (*.pdf);;Portable Network Graphics (*.png);;Encapsulated Post-Script (*.eps);;Scalable Vector Graphics (*.svg)')
+    def saveSuper(self, filename=None):
+        if filename is None:
+            filename, _ = QFileDialog.getSaveFileName(self, caption='Save super particle', filter='Portable Document Form (*.pdf);;Portable Network Graphics (*.png);;Encapsulated Post-Script (*.eps);;Scalable Vector Graphics (*.svg)')
 
         if not filename:
             return
 
         self.superPlotCanvas.print_figure(filename, bbox_inches='tight')
+
+
+    def saveBoth(self):
+        filename, _ = QFileDialog.getSaveFileName(self, caption='Save both figures', filter='Portable Document Form (*.pdf);;Portable Network Graphics (*.png);;Encapsulated Post-Script (*.eps);;Scalable Vector Graphics (*.svg)')
+
+        if not filename:
+            return
+
+        f = filename.split('.')
+        filename = str.join('.', f[:-1])
+        ext = f[-1]
+
+        if filename.endswith('_image') or filename.endswith('_super'):
+            filename = filename[:-6]
+
+        imgname = filename+'_image.'+ext
+        supname = filename+'_super.'+ext
+
+        self.saveImage(filename=imgname)
+        self.saveSuper(filename=supname)
 
 
     def setupEnergySlider(self):
