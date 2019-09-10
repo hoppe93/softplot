@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 from matplotlib.figure import Figure
+import matplotlib.ticker
 import skimage.measure
 
 from evaluateExpression import evaluateExpression
@@ -53,6 +54,9 @@ class BeamsizeMeasurement(QtWidgets.QMainWindow):
     def bindEvents(self):
         self.ui.btnBrowse.clicked.connect(self.openFile)
         self.ui.btnBrowseOverlay.clicked.connect(self.openOverlay)
+        self.ui.btnSaveImage.clicked.connect(self.saveImage)
+        self.ui.btnSaveBoth.clicked.connect(self.saveBoth)
+        self.ui.btnSaveProfile.clicked.connect(self.saveProfile)
 
         self.ui.sliderBeamsize.valueChanged.connect(self.sliderBeamsizeChanged)
         self.ui.sliderIntensity.valueChanged.connect(self.sliderIntensityChanged)
@@ -309,11 +313,12 @@ class BeamsizeMeasurement(QtWidgets.QMainWindow):
             self.overlayHandle.set_alpha(a)
             self.plotWindow.drawSafe()
 
-    def saveImage(self):
+    def saveImagePNG(self, filename=False):
         """
         Save the currently displayed SOFT image to a PNG file.
         """
-        filename, _ = QFileDialog.getSaveFileName(self, caption='Save image', filter='Portable Network Graphics (*.png)')
+        if filename is False:
+            filename, _ = QFileDialog.getSaveFileName(self, caption='Save image', filter='Portable Network Graphics (*.png)')
 
         if filename:
             f = self.getRadialProfile()
@@ -327,5 +332,56 @@ class BeamsizeMeasurement(QtWidgets.QMainWindow):
             cmap = plt.get_cmap('GeriMap')
             im = Image.fromarray(np.uint8(cmap(img)*255))
             im.save(filename)
+
+    def saveImage(self, filename=False):
+        """
+        Save the currently displayed SOFT image to a PNG file.
+        """
+        if filename is False:
+            filename, _ = QFileDialog.getSaveFileName(self, caption='Save image', filter='Portable Network Graphics (*.png)')
+
+        if not filename: return
+
+        self.imageAx.set_axis_off()
+        self.plotWindow.figure.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
+
+        self.imageAx.get_xaxis().set_major_locator(matplotlib.ticker.NullLocator())
+        self.imageAx.get_yaxis().set_major_locator(matplotlib.ticker.NullLocator())
+
+        fcolor = self.plotWindow.figure.patch.get_facecolor()
+
+        self.plotWindow.canvas.print_figure(filename, bbox_inches='tight', pad_inches=0, dpi=300)
+
+
+    def saveProfile(self, filename=False):
+        """
+        Saves the current radial profile.
+        """
+        if filename is False:
+            filename, _ = QFileDialog.getSaveFileName(self, caption='Save image', filter='Portable Network Graphics (*.png)')
+
+        if not filename:
+            return
+
+        self.radialProfileCanvas.figure.canvas.print_figure(filename, bbox_inches='tight')
+
+    def saveBoth(self):
+        filename, _ = QFileDialog.getSaveFileName(self, caption='Save both figures', filter='Portable Document Form (*.pdf);;Portable Network Graphics (*.png);;Encapsulated Post-Script (*.eps);;Scalable Vector Graphics (*.svg)')
+
+        if not filename:
+            return
+
+        f = filename.split('.')
+        filename = str.join('.', f[:-1])
+        ext = f[-1]
+
+        if filename.endswith('_image') or filename.endswith('_super'):
+            filename = filename[:-6]
+
+        imgname = filename+'_image.'+ext
+        supname = filename+'_profile.'+ext
+
+        self.saveImage(filename=imgname)
+        self.saveProfile(filename=supname)
 
 

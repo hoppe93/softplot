@@ -2,9 +2,10 @@
 
 # Form implementation generated from reading ui file 'ui/green/BeamsizeMeasurement.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.1
+# Created by: PyQt5 UI code generator 5.13.0
 #
 # WARNING! All changes made in this file will be lost!
+
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -12,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_BeamsizeMeasurement(object):
     def setupUi(self, BeamsizeMeasurement):
         BeamsizeMeasurement.setObjectName("BeamsizeMeasurement")
-        BeamsizeMeasurement.resize(586, 871)
+        BeamsizeMeasurement.resize(586, 927)
         self.centralwidget = QtWidgets.QWidget(BeamsizeMeasurement)
         self.centralwidget.setObjectName("centralwidget")
         self.tbGreensFunction = QtWidgets.QLineEdit(self.centralwidget)
@@ -160,6 +161,17 @@ class Ui_BeamsizeMeasurement(object):
         self.cbContour.setGeometry(QtCore.QRect(10, 250, 281, 25))
         self.cbContour.setChecked(True)
         self.cbContour.setObjectName("cbContour")
+        self.btnSaveImage = QtWidgets.QPushButton(self.centralwidget)
+        self.btnSaveImage.setGeometry(QtCore.QRect(10, 840, 181, 27))
+        self.btnSaveImage.setObjectName("btnSaveImage")
+        self.btnSaveProfile = QtWidgets.QPushButton(self.centralwidget)
+        self.btnSaveProfile.setEnabled(True)
+        self.btnSaveProfile.setGeometry(QtCore.QRect(390, 840, 181, 27))
+        self.btnSaveProfile.setObjectName("btnSaveProfile")
+        self.btnSaveBoth = QtWidgets.QPushButton(self.centralwidget)
+        self.btnSaveBoth.setEnabled(True)
+        self.btnSaveBoth.setGeometry(QtCore.QRect(200, 840, 181, 27))
+        self.btnSaveBoth.setObjectName("btnSaveBoth")
         BeamsizeMeasurement.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(BeamsizeMeasurement)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 586, 24))
@@ -216,8 +228,9 @@ class Ui_BeamsizeMeasurement(object):
         self.lblOverlay80.setText(_translate("BeamsizeMeasurement", "80%"))
         self.lblBeamRadius.setText(_translate("BeamsizeMeasurement", "N/A"))
         self.cbContour.setText(_translate("BeamsizeMeasurement", "Plot contour"))
+        self.btnSaveImage.setText(_translate("BeamsizeMeasurement", "Save image"))
+        self.btnSaveProfile.setText(_translate("BeamsizeMeasurement", "Save radial profile"))
+        self.btnSaveBoth.setText(_translate("BeamsizeMeasurement", "Save both"))
         self.menuFile.setTitle(_translate("BeamsizeMeasurement", "File"))
         self.actionSave.setText(_translate("BeamsizeMeasurement", "Save as..."))
         self.actionExit.setText(_translate("BeamsizeMeasurement", "Exit"))
-
-
