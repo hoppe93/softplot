@@ -65,7 +65,7 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
 
         self.ui.sliderEnergy.valueChanged.connect(self.energyChanged)
         self.ui.sliderPitchAngle.valueChanged.connect(self.pitchAngleParameterChanged)
-        self.ui.sliderOverlay.valueChanged.connect(self.updateOverlay)
+        self.ui.sliderOverlay.valueChanged.connect(self.overlaySliderChanged)
 
         self.ui.cbUnderlay.toggled.connect(self.toggleOverlayType)
 
@@ -302,11 +302,14 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         lbl = ''.join(random.choices(string.ascii_uppercase, k=4))
         self.imageAx = self.plotWindow.figure.add_subplot(111, label=lbl)
 
-        if self.ui.cbUnderlay.isChecked() and self.overlayHandle is not None:
+        a = 1
+        if self.overlayHandle is not None:
             self.setupOverlay()
-
+            if not self.ui.cbUnderlay.isChecked():
+                a = 1 - (self.ui.sliderOverlay.value()) / 100.0
+            
         dummy = np.zeros(self.GF._pixels)
-        self.imageHandle = self.imageAx.imshow(dummy, cmap=self.gerimap, interpolation=None, clim=(0, 1), extent=[-1,1,-1,1], zorder=1000)
+        self.imageHandle = self.imageAx.imshow(dummy, cmap=self.gerimap, alpha=a, interpolation=None, clim=(0, 1), extent=[-1,1,-1,1], zorder=1)
         self.imageAx.get_xaxis().set_visible(False)
         self.imageAx.get_yaxis().set_visible(False)
 
@@ -320,11 +323,8 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         if self.overlayHandle is not None:
             self.overlayHandle.remove()
             
-        a = 1
-        if not self.ui.cbUnderlay.isChecked():
-            a = (self.ui.sliderOverlay.value()) / 100.0
-
-        self.overlayHandle = self.imageAx.imshow(self.overlay, alpha=a, extent=[-1,1,-1,1], zorder=0)
+        self.overlayHandle = self.imageAx.imshow(self.overlay, extent=[-1,1,-1,1], zorder=0)
+        self.updateImage()
         self.plotWindow.drawSafe()
 
 
@@ -349,15 +349,8 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         self.updateImage(f=f)
 
 
-    def updateOverlay(self):
-        if self.overlayHandle is not None:
-            if self.ui.cbUnderlay.isChecked():
-                self.overlayHandle.set_alpha(1)
-            else:
-                a = float(self.ui.sliderOverlay.value()) / 100.0
-                self.overlayHandle.set_alpha(a)
-
-            self.plotWindow.drawSafe()
+    def overlaySliderChanged(self):
+        self.updateImage()
 
 
     def updateImage(self, f=None):
@@ -374,6 +367,13 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         I = I.T / np.amax(I)
 
         self.imageHandle.set_data(I)
+
+        if self.ui.cbUnderlay.isChecked() or self.overlayHandle is None:
+            self.imageHandle.set_alpha(1)
+        else:
+            a = float(self.ui.sliderOverlay.value()) / 100.0
+            self.imageHandle.set_alpha(1-a)
+
         self.plotWindow.drawSafe()
 
 
