@@ -232,23 +232,23 @@ class BeamsizeMeasurement(QtWidgets.QMainWindow):
         s = self.ui.tbRadialProfile.toPlainText().strip()
         x = self.radius / self.radius[-1]
         f0 = np.zeros(self.radius.shape)
+        a = self.radius[self.ui.sliderBeamsize.value()] / self.radius[-1]
 
         if not s:
             f = np.ones(self.radius.shape)
         else:
             # Parse string
             f = None
+            lcls = {'a': a}
             try:
-                f = evaluateExpression(s, x)
+                f = evaluateExpression(s, x, lcls=lcls)
             except Exception as ex:
-                #print('ERROR: {0}'.format(ex))
                 return np.zeros(self.radius.shape)
 
             # Set negative values to zero
             f = np.where(f < 0, f0, f)
 
         # Apply step function
-        a = self.radius[self.ui.sliderBeamsize.value()] / self.radius[-1]
         f = np.where(x < a, f, f0)
 
         return f

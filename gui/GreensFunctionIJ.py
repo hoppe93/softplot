@@ -8,6 +8,7 @@ import scipy.io
 import h5py
 import SOFT
 from matplotlib.colors import LinearSegmentedColormap
+import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMessageBox
@@ -32,6 +33,18 @@ class GreensFunctionIJ(QtWidgets.QMainWindow):
         
         # Create plot window
         self.plotWindow = PlotWindow()
+
+        self.imageAx = None
+        self.overlayHandle = None
+
+        # Combobox used for select polarization quantity to plot
+        self.stokesbox = None
+
+        # Overlay controls
+        self.tbOverlay        = None
+        self.btnOverlay       = None
+        self.lblOverlaySlider = None
+        self.sliderOverlay    = None
 
         # Load Green's function
         self.gf = Green(filename=self.filename)
@@ -62,12 +75,16 @@ class GreensFunctionIJ(QtWidgets.QMainWindow):
                 self.buildControl(index=i, coordname=self.getCoordinateName(gf._param2name), vals=gf._param2)
             elif d == 'r':
                 self.buildControl(index=i, coordname='Radius', vals=gf._r)
+            elif d == 's':
+                self.buildStokes(index=i, coordname='Polarization quantity')
             elif d == 'w':
                 self.buildControl(index=i, coordname='Wavelength', vals=gf._wavelengths)
             else:
                 raise Exception("Unrecognized or unsupported Green's function format: '{}'.".format(d))
 
             i += 1
+
+        self.buildOverlay(index=i)
 
     
     def buildControl(self, index, coordname, vals):
@@ -111,6 +128,69 @@ class GreensFunctionIJ(QtWidgets.QMainWindow):
         self.resize(self.WIDTH, self.HEIGHT)
 
 
+    def buildOverlay(self, index):
+        hl = QtWidgets.QHBoxLayout()
+
+        lbl = QtWidgets.QLabel(self.centralwidget)
+        lbl.setText("Overlay:")
+
+        tb = QtWidgets.QLineEdit(self.centralwidget)
+        tb.setReadOnly(True)
+        self.tbOverlay = tb
+
+        btn = QtWidgets.QPushButton(self.centralwidget)
+        btn.setText('Browse...')
+        self.btnOverlay = btn
+        self.btnOverlay.clicked.connect(self.openOverlay)
+
+        lblOverlaySlider = QtWidgets.QLabel(self.centralwidget)
+        lblOverlaySlider.setText('50%')
+        lblOverlaySlider.setAlignment(QtCore.Qt.AlignRight)
+        self.lblOverlaySlider = lblOverlaySlider
+
+        slider = QtWidgets.QSlider(self.centralwidget)
+        slider.setOrientation(QtCore.Qt.Horizontal)
+        slider.setMinimum(0)
+        slider.setMaximum(100)
+        slider.setValue(50)
+        slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        slider.setTickInterval(5)
+        self.sliderOverlay = slider
+
+        slider.valueChanged.connect(self.sliderOverlayChanged)
+
+        hl.addWidget(tb)
+        hl.addWidget(btn)
+
+        self.verticalLayout.addWidget(lbl)
+        self.verticalLayout.addLayout(hl)
+        self.verticalLayout.addWidget(lblOverlaySlider)
+        self.verticalLayout.addWidget(slider)
+
+        self.HEIGHT += tb.height() + lbl.height() + slider.height() + lblOverlaySlider.height()
+        self.resize(self.WIDTH, self.HEIGHT)
+
+
+    def buildStokes(self, index, coordname):
+        cb = QtWidgets.QComboBox(self.centralwidget)
+        self.stokesbox = cb
+
+        cb.addItem("Polarization angle")
+        cb.addItem("Polarization fraction")
+        cb.addItem("Stokes I")
+        cb.addItem("Stokes Q")
+        cb.addItem("Stokes U")
+        cb.addItem("Stokes V")
+
+        cb.setCurrentIndex(2)
+        cb.currentIndexChanged.connect(self.redrawFigure)
+        
+        self.verticalLayout.insertWidget(index, cb)
+
+        self.HEIGHT += cb.height()
+        self.resize(self.WIDTH, self.HEIGHT)
+
+
     def classifyGreensFunction(self, gf):
         dims = gf.format
 
@@ -120,6 +200,11 @@ class GreensFunctionIJ(QtWidgets.QMainWindow):
         # Just pick out the interesting dimensions
         dims = dims[:-2]
         nparams = len(dims)
+
+        # Append Stoke's dimension?
+        if gf.stokesparams:
+            dims = 's'+dims
+            nparams += 1
 
         return nparams, dims
         
@@ -143,25 +228,70 @@ class GreensFunctionIJ(QtWidgets.QMainWindow):
         Returns the appropriate image to draw based on
         how the GUI controls are set.
         """
+        F = self.gf.FUNC
+        colormap = 'GeriMap'
+
+        # Compute select polarization quantity
+        if self.stokesbox is not None:
+            val = self.stokesbox.currentText()
+
+            Fmax, Fmin = None, 0
+            if val == "Polarization angle":
+                F = 0.5 * np.arctan2(F[2], F[1]) * 180/np.pi
+                Fmax, Fmin = 90, -90
+                colormap = 'RdBu'
+            elif val == "Polarization fraction":
+                F = np.sqrt(F[1]**2 + F[2]**2) / F[0]
+                F[np.where(np.isnan(F))] = 0
+                Fmax = 1
+            elif val == "Stokes I":
+                F = F[0]
+            elif val == "Stokes Q":
+                F = F[1]
+            elif val == "Stokes U":
+                F = F[2]
+            elif val == "Stokes V":
+                F = F[3]
+            else:
+                raise Exception("INTERNAL ERROR: Unrecognized polarization quantity select: '{}'.".format(val))
+
         if self.wfgb.isChecked():   # Draw with weight function
             print('Not supported yet...')
             return np.zeros(self.gf._pixels)
         else:
             indices = list()
-            F = self.gf.FUNC
             for s in self.paramSliders:
                 F = F[s.value()]
             
             if len(F.shape) != 2:
                 raise Exception('INTERNAL ERROR: F does not have the expected shape.')
 
-            F /= np.amax(F)
-            return F.T
+            if Fmax is None:
+                F /= np.amax(F)
+                Fmax = 1
+
+            return F.T, Fmax, Fmin, colormap
+
+
+    def loadOverlay(self, filename):
+        self.tbOverlay.setText(filename)
+        self.overlay = mpimg.imread(filename)
+
+        self.setupOverlay()
+
+
+    def openOverlay(self):
+        filename, _ = QFileDialog.getOpenFileName(parent=self, caption="Open image overlay", filter="Portable Network Graphics (*.png)")
+
+        if filename:
+            self.loadOverlay(filename)
 
 
     def redrawFigure(self):
-        F = self.getSelectedGreensFunction()
+        F, Fmax, Fmin, cmap = self.getSelectedGreensFunction()
         self.imageHandle.set_data(F)
+        self.imageHandle.set_clim(vmin=Fmin, vmax=Fmax)
+        self.imageHandle.set_cmap(cmap)
         self.plotWindow.drawSafe()
 
 
@@ -194,14 +324,25 @@ class GreensFunctionIJ(QtWidgets.QMainWindow):
     def setupImage(self):
         self.imageAx = self.plotWindow.figure.add_subplot(111)
 
-        F = self.getSelectedGreensFunction()
-        self.imageHandle = self.imageAx.imshow(F, cmap='GeriMap', interpolation=None, clim=(0, 1), extent=[-1, 1, -1, 1])
+        F, Fmax, Fmin, cmap = self.getSelectedGreensFunction()
+        self.imageHandle = self.imageAx.imshow(F, cmap=cmap, interpolation=None, clim=(Fmin, Fmax), extent=[-1, 1, -1, 1])
         self.imageAx.get_xaxis().set_visible(False)
         self.imageAx.get_yaxis().set_visible(False)
+
+        self.colorbar = self.plotWindow.figure.colorbar(self.imageHandle, ax=self.imageAx)
 
         if not self.plotWindow.isVisible():
             self.plotWindow.show()
         
+        self.plotWindow.drawSafe()
+
+
+    def setupOverlay(self):
+        if self.overlayHandle is not None:
+            self.overlayHandle.remove()
+
+        val = self.sliderOverlay.value() / 100.0
+        self.overlayHandle = self.imageAx.imshow(self.overlay, alpha=val, extent=[-1,1,-1,1], zorder=100)
         self.plotWindow.drawSafe()
 
 
@@ -288,6 +429,16 @@ class GreensFunctionIJ(QtWidgets.QMainWindow):
             self.paramLabels[i].setText('{}'.format(val))
 
         self.redrawFigure()
+
+
+    def sliderOverlayChanged(self):
+        val = self.sliderOverlay.value() / 100.0
+        self.lblOverlaySlider.setText('{}%'.format(self.sliderOverlay.value()))
+
+        if self.overlayHandle is not None:
+            self.overlayHandle.set_alpha(val)
+
+        self.plotWindow.drawSafe()
 
 
     def toggleWeightFunction(self):

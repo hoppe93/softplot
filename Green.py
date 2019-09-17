@@ -30,6 +30,7 @@ class Green:
         self.nw = 0
 
         self.format = None
+        self.stokesparams = False
 
         self.GAMMA  = np.array([])
         self.P      = np.array([])
