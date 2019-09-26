@@ -227,7 +227,10 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         return True
 
 
-    def saveImage(self, filename=None):
+    def saveImage(self): self.doSaveImage()
+    def saveSuper(self): self.doSaveSuper()
+
+    def doSaveImage(self, filename=None):
         if filename is None:
             filename, _ = QFileDialog.getSaveFileName(self, caption='Save synthetic image', filter='Portable Document Form (*.pdf);;Portable Network Graphics (*.png);;Encapsulated Post-Script (*.eps);;Scalable Vector Graphics (*.svg)')
 
@@ -245,7 +248,7 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         self.plotWindow.canvas.print_figure(filename, bbox_inches='tight', pad_inches=0, dpi=300)
 
 
-    def saveSuper(self, filename=None):
+    def doSaveSuper(self, filename=None):
         if filename is None:
             filename, _ = QFileDialog.getSaveFileName(self, caption='Save super particle', filter='Portable Document Form (*.pdf);;Portable Network Graphics (*.png);;Encapsulated Post-Script (*.eps);;Scalable Vector Graphics (*.svg)')
 
@@ -271,8 +274,8 @@ class SingleEnergyPitchIJ(QtWidgets.QMainWindow):
         imgname = filename+'_image.'+ext
         supname = filename+'_super.'+ext
 
-        self.saveImage(filename=imgname)
-        self.saveSuper(filename=supname)
+        self.doSaveImage(filename=imgname)
+        self.doSaveSuper(filename=supname)
 
 
     def setupEnergySlider(self):

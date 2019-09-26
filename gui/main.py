@@ -10,6 +10,7 @@ from ImageWindow import ImageWindow
 from MeqWindow import MeqWindow
 from SingleEnergyPitchIJ import SingleEnergyPitchIJ
 from BeamsizeMeasurement import BeamsizeMeasurement
+from GreensFunctionR12 import GreensFunctionR12
 from GreensFunctionIJ import GreensFunctionIJ
 
 from GeriMap import registerGeriMap
@@ -49,6 +50,14 @@ def show_meq(argv):
     return app.exec_()
 
 
+def show_r12(argv):
+    global app
+
+    gwindow = GreensFunctionR12(argv)
+    gwindow.show()
+    return app.exec_()
+
+
 def show_rij(argv):
     global app
 
@@ -81,6 +90,8 @@ if __name__ == '__main__':
         sys.exit(show_meq(sys.argv[2:]))
     elif sys.argv[1] == 'greenij':
         sys.exit(show_greenij(sys.argv[2:]))
+    elif sys.argv[1] == '12' or sys.argv[1] == 'r12':
+        sys.exit(show_r12(sys.argv[2:]))
     elif sys.argv[1] == 'rij':
         sys.exit(show_rij(sys.argv[2:]))
     elif sys.argv[1] == 's12ij':

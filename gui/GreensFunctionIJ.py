@@ -1,6 +1,5 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from ui import meq_design
 import sys
 import os.path
 import numpy as np

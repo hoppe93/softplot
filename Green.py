@@ -204,7 +204,7 @@ class Green:
         self.P = np.sqrt(self.GAMMA**2 - 1)
         self.PPERP = np.sqrt(self.P**2 - self.PPAR**2)
         self.XI = self.PPAR / self.P
-        self.THETAP = np.acos(self.XI)
+        self.THETAP = np.arccos(self.XI)
 
         self.J = self.GAMMA
 
@@ -222,7 +222,7 @@ class Green:
         self.GAMMA, self.XI = np.meshgrid(gamma, xi)
 
         self.P = np.sqrt(self.GAMMA**2 - 1)
-        self.THETAP = np.acos(self.XI)
+        self.THETAP = np.arccos(self.XI)
         self.PPAR = self.P * self.XI
         self.PPERP = self.P * np.sqrt(1 - self.XI**2)
 
@@ -234,7 +234,7 @@ class Green:
         self.GAMMA = np.sqrt(self.P**2 + 1)
         self.PPERP = np.sqrt(self.P**2 - self.PPAR**2)
         self.XI = self.PPAR / self.P
-        self.THETAP = np.acos(self.XI)
+        self.THETAP = np.arccos(self.XI)
 
         self.J = self.P
 
@@ -252,7 +252,7 @@ class Green:
         self.P, self.XI = np.meshgrid(p, xi)
 
         self.GAMMA = np.sqrt(self.P**2 + 1)
-        self.THETAP = np.acos(self.XI)
+        self.THETAP = np.arccos(self.XI)
         self.PPAR = self.P * self.XI
         self.PPERP = self.P * np.sqrt(1 - self.XI**2)
 
@@ -264,7 +264,7 @@ class Green:
         self.P = np.sqrt(self.PPAR**2 + self.PPERP**2)
         self.GAMMA = np.sqrt(self.P**2 + 1)
         self.XI = self.PPAR / self.P
-        self.THETAP = np.acos(self.XI)
+        self.THETAP = np.arccos(self.XI)
 
         self.J = self.PPERP
 
@@ -281,7 +281,7 @@ class Green:
     def _pparXi(self, ppar, xi):
         self.PPAR, self.XI = np.meshgrid(ppar, xi)
 
-        self.THETAP = self.acos(self.XI)
+        self.THETAP = self.arccos(self.XI)
         self.P = self.PPAR / self.XI
         self.PPERP = np.sqrt(self.P**2 - self.PPAR**2)
         self.GAMMA = np.sqrt(self.P**2 + 1)
@@ -301,7 +301,7 @@ class Green:
     def _pperpXi(self, pperp, xi):
         self.PPERP, self.XI = np.meshgrid(pperp, xi)
 
-        self.THETAP = np.acos(self.XI)
+        self.THETAP = np.arccos(self.XI)
         self.P = self.PPERP / np.sqrt(1 - self.XI**2)
         self.PPAR = self.P * self.XI
         self.GAMMA = np.sqrt(self.P**2 + 1)
