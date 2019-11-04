@@ -105,6 +105,12 @@ class MagneticField:
             self.name        = tos(f['name'])
             self.maxis       = f['maxis'][:]
 
+            if len(self.maxis.shape) != 1:
+                if self.maxis.shape[0] == 1:
+                    self.maxis = self.maxis[0,:]
+                else:
+                    self.maxis = self.maxis[:,0]
+
             try: self.verBphi       = np.array(f['verBphi'][:])
             except KeyError: pass
             try: self.verBr         = np.array(f['verBr'][:])

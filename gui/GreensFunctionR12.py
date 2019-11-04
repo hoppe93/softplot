@@ -123,6 +123,7 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
     def redrawFigure(self):
         F = self.getGF()
         r = np.linspace(0, 1, 20)
+        self.ax.clear()
         cntr = self.ax.contourf(self.gf._param1, self.gf._param2, F, levels=r, cmap='GeriMap', vmin=0, vmax=1)
 
         if self.colorbar is None:
