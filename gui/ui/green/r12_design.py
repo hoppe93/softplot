@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/green/r12.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.1
+# Created by: PyQt5 UI code generator 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_R12(object):
     def setupUi(self, R12):
         R12.setObjectName("R12")
-        R12.resize(512, 369)
+        R12.resize(512, 400)
         self.centralwidget = QtWidgets.QWidget(R12)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -100,10 +100,13 @@ class Ui_R12(object):
         self.btnMark.setEnabled(True)
         self.btnMark.setObjectName("btnMark")
         self.horizontalLayout_3.addWidget(self.btnMark)
+        self.btnPlotRadialProfile = QtWidgets.QPushButton(self.centralwidget)
+        self.btnPlotRadialProfile.setObjectName("btnPlotRadialProfile")
+        self.horizontalLayout_3.addWidget(self.btnPlotRadialProfile)
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.btnSave = QtWidgets.QPushButton(self.centralwidget)
         self.btnSave.setObjectName("btnSave")
-        self.horizontalLayout_3.addWidget(self.btnSave)
-        self.verticalLayout.addLayout(self.horizontalLayout_3)
+        self.verticalLayout.addWidget(self.btnSave)
         R12.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(R12)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 512, 24))
@@ -133,4 +136,5 @@ class Ui_R12(object):
         self.label_2.setText(_translate("R12", "Pitch angle:"))
         self.lblSuperPitch.setText(_translate("R12", "n/a"))
         self.btnMark.setText(_translate("R12", "Mark super-particle"))
+        self.btnPlotRadialProfile.setText(_translate("R12", "Plot radial profile"))
         self.btnSave.setText(_translate("R12", "Save figure"))

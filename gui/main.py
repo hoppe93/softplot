@@ -6,6 +6,7 @@ import sys, inspect, os
 sys.path.append(os.path.abspath(os.path.dirname(os.path.abspath(__file__))+"/../"))
 
 from DetectorCalibration import DetectorCalibration
+from DistributionFunctionUI import DistributionFunctionUI
 from ImageWindow import ImageWindow
 from MeqWindow import MeqWindow
 from SingleEnergyPitchIJ import SingleEnergyPitchIJ
@@ -22,6 +23,14 @@ def show_detcal(argv):
     global app
 
     dwindow = DetectorCalibration(argv)
+    dwindow.show()
+    return app.exec_()
+
+
+def show_distfunc(argv):
+    global app
+
+    dwindow = DistributionFunctionUI(argv)
     dwindow.show()
     return app.exec_()
 
@@ -84,6 +93,8 @@ if __name__ == '__main__':
 
     if sys.argv[1] == 'detcal':
         sys.exit(show_detcal(sys.argv[2:]))
+    elif sys.argv[1] == 'distfunc':
+        sys.exit(show_distfunc(sys.argv[2:]))
     elif sys.argv[1] == 'image':
         sys.exit(show_image(sys.argv[2:]))
     elif sys.argv[1] == 'meq':

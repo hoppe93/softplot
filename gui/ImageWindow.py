@@ -151,7 +151,7 @@ class ImageWindow(QtWidgets.QMainWindow):
         self.plotWindow.plotImage()
 
     def reloadFile(self):
-        if self.filename is "":
+        if self.filename == "":
             return
 
         self.loadFile(self.filename)

@@ -115,7 +115,7 @@ def runSOFT(pifile):
 
     stderr_data = p.communicate(input=bytearray(pifile, 'ascii'))[1].decode('utf-8')
 
-    if p.returncode is not 0:
+    if p.returncode != 0:
         print(stderr_data)
         raise RuntimeError('SOFT exited with a non-zero exit code.')
 

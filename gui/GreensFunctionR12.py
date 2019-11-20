@@ -32,7 +32,9 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
 
         self.filename = argv[0]
         self.plotWindow = PlotWindow(width=800, height=600)
+        self.radialPlotWindow = PlotWindow(width=700, height=400)
         self.ax = None
+        self.radialAx = None
         self.colorbar = None
 
         self.loadGreensFunction(self.filename)
@@ -47,6 +49,7 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
 
     def exit(self):
         self.plotWindow.close()
+        self.radialPlotWindow.close()
         self.close()
 
 
@@ -55,18 +58,19 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
         self.ui.sliderRadius.valueChanged.connect(self.sliderRadiusChanged)
 
         self.ui.btnMark.clicked.connect(self.markSuperParticle)
+        self.ui.btnPlotRadialProfile.clicked.connect(self.plotRadialProfile)
         self.ui.btnSave.clicked.connect(self.saveFigure)
 
     
     def getGF(self):
         F = None
         if self.format == '12':
-            F  = self.gf.FUNC.T
+            F  = np.copy(self.gf.FUNC).T
             mx = np.amax(F)
             if mx != 0: F /= mx
         elif self.ui.rbSingleR.isChecked():
             idx = self.ui.sliderRadius.value()
-            F   = self.gf.FUNC[idx].T
+            F   = np.copy(self.gf.FUNC[idx]).T
             mx  = np.amax(F)
             if mx != 0: F  /= mx
         else:
@@ -118,6 +122,27 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
         m1, m2, _, _ = self.getSuperParticle(F)
         self.ax.plot(m1, m2, 'x', color=(0, 1, 0), markersize=10, markeredgewidth=3)
         self.plotWindow.drawSafe()
+
+
+    def plotRadialProfile(self):
+        mc = 9.109e-31 * 299792458
+        J  = self.gf.getJacobian().T * mc**3
+        r  = self.gf._r
+        fr = np.zeros((r.size,))
+        F  = self.gf.FUNC
+
+        for i in range(0, r.size):
+            rrr = np.sum(F[i,:,:]*J)
+            fr[i] = rrr
+
+        self.radialAx = self.radialPlotWindow.figure.add_subplot(111)
+        self.radialAx.plot(r, fr / (r-r[0])**2, linewidth=2)
+        self.radialAx.set_xlabel(r'$\mathrm{Major\ radius}\ \rho$')
+        self.radialAx.set_ylabel(r'$\mathrm{Radial\ intensity}\ \partial I/\partial\rho$')
+        self.radialPlotWindow.drawSafe()
+
+        if not self.radialPlotWindow.isVisible():
+            self.radialPlotWindow.show()
 
 
     def redrawFigure(self):
