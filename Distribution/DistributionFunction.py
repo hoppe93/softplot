@@ -19,6 +19,8 @@ class DistributionFunction:
 
 
     def getMaxP(self): return self.maxp
+    def getMomentum(self, rindex=None):
+        raise Exception("Not implemented for this kind of distribution function.")
     def getNr(self): return self.nr
     def getNmomentum(self): return self.nmom
     def getRadius(self, index): return self.r[index]
@@ -30,7 +32,7 @@ class DistributionFunction:
         are given, the distribution function is returned on the
         default grid.
         """
-        raise Exception("Not implemented yet.")
+        raise Exception("Not implemented for this kind of distribution function.")
 
 
     def getCurrentDensity(self, r=None):
@@ -39,7 +41,7 @@ class DistributionFunction:
         on the given radial grid. The current density is the 
         vpar moment of the distribution function.
         """
-        raise Exception("Not implemented yet.")
+        raise Exception("Not implemented for this kind of distribution function.")
 
 
     def getRadialDensity(self, r=None):
@@ -51,6 +53,6 @@ class DistributionFunction:
         r: Radial grid to evaluate the distribution on. If 'None',
            uses the default radial grid.
         """
-        raise Exception("Not implemented yet.")
+        raise Exception("Not implemented for this kind of distribution function.")
 
 

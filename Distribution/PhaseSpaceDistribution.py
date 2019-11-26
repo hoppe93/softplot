@@ -167,6 +167,14 @@ class PhaseSpaceDistribution(DistributionFunction):
         return p, ((r1-r)*f0 + (r-r0)*f1) / (r1-r0)
 
 
+    def getMomentum(self, rindex):
+        """
+        Returns the 'default' momentum grid for the
+        distribution function at radial index 'rindex'.
+        """
+        return self._distributions[rindex].getMomentum()
+
+
     def getMomentumDistribution(self, rindex):
         """
         Returns the momentum-space distribution with index 'rindex'.

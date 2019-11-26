@@ -94,6 +94,13 @@ class CODEDistribution(MomentumSpaceDistribution):
             return p, np.interp(p, self._codeP, fp) * v
 
 
+    def getMomentum(self):
+        """
+        Returns the 'default' momentum grid.
+        """
+        return self._codeP
+
+
     def load(self, filename, path=''):
         """
         Load the CODE distribution function that is

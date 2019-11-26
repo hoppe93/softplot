@@ -6,6 +6,7 @@ import os.path
 import numpy as np
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from PlotWindow import PlotWindow
+from DistributionFunctionAnalysePitch import DistributionFunctionAnalysePitch
 import time
 import Bekefi
 
@@ -33,6 +34,8 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
 
         self.radialPlotWindow = PlotWindow(width=700, height=400)
 
+        self.anapitchWindow = DistributionFunctionAnalysePitch(self)
+
         self.maxF = None    # Maximum of distribution function
         self.maxP = None    # Maximum momentum on distribution grid
 
@@ -49,6 +52,12 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
         self.bindEvents()
 
 
+    def analysePitchDistribution(self):
+        r = self.ui.sliderRadius.value()
+        self.anapitchWindow.setDistribution(r, self.distfunc)
+        self.anapitchWindow.show()
+
+
     def bindEvents(self):
         self.ui.sliderRadius.valueChanged.connect(self.sliderRadiusChanged)
         
@@ -61,6 +70,7 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
         self.ui.rbSynchrotron.toggled.connect(self.rbSynchrotronChanged)
         self.ui.rbRunaway.toggled.connect(self.rbRunawayChanged)
 
+        self.ui.btnAnalysePitch.clicked.connect(self.analysePitchDistribution)
         self.ui.btnAutomaticY.clicked.connect(self.setAutomaticYLimit)
         self.ui.btnClearKeptDistributions.clicked.connect(self.keepDistributionClear)
         self.ui.btnKeepDistribution.clicked.connect(self.keepDistribution)

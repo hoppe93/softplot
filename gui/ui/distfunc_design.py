@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_DistfuncUI(object):
     def setupUi(self, DistfuncUI):
         DistfuncUI.setObjectName("DistfuncUI")
-        DistfuncUI.resize(610, 890)
+        DistfuncUI.resize(610, 934)
         self.centralwidget = QtWidgets.QWidget(DistfuncUI)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -333,6 +333,13 @@ class Ui_DistfuncUI(object):
         self.btnMomentProfile.setObjectName("btnMomentProfile")
         self.horizontalLayout_13.addWidget(self.btnMomentProfile)
         self.verticalLayout_3.addLayout(self.horizontalLayout_13)
+        self.horizontalLayout_15 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_15.setContentsMargins(-1, 0, -1, -1)
+        self.horizontalLayout_15.setObjectName("horizontalLayout_15")
+        self.btnAnalysePitch = QtWidgets.QPushButton(self.groupBox_2)
+        self.btnAnalysePitch.setObjectName("btnAnalysePitch")
+        self.horizontalLayout_15.addWidget(self.btnAnalysePitch)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_15)
         self.verticalLayout.addWidget(self.groupBox_2)
         spacerItem1 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem1)
@@ -393,3 +400,4 @@ class Ui_DistfuncUI(object):
         self.btnPlotRadprof.setText(_translate("DistfuncUI", "Plot radial density"))
         self.btnPlotCurrent.setText(_translate("DistfuncUI", "Plot current density"))
         self.btnMomentProfile.setText(_translate("DistfuncUI", "Plot profile of selected moment"))
+        self.btnAnalysePitch.setText(_translate("DistfuncUI", "Analyse pitch distribution"))

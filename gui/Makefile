@@ -4,7 +4,7 @@ PFLAGS=
 
 GREEN=ui/green/SingleEnergyPitchIJ_design.py ui/green/BeamsizeMeasurement_design.py ui/green/r12_design.py
 
-all: ui/detcal_design.py ui/distfunc_design.py ui/image_design.py ui/meq_design.py $(GREEN)
+all: ui/detcal_design.py ui/distfunc_anapitch_design.py ui/distfunc_design.py ui/image_design.py ui/meq_design.py $(GREEN)
 
 ui/%_design.py: ui/%.ui
 	$(PYUIC) $(PFLAGS) $< -o $@

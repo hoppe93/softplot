@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>610</width>
-    <height>890</height>
+    <height>934</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -640,6 +640,20 @@
            </property>
            <property name="text">
             <string>Plot profile of selected moment</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_15">
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QPushButton" name="btnAnalysePitch">
+           <property name="text">
+            <string>Analyse pitch distribution</string>
            </property>
           </widget>
          </item>
