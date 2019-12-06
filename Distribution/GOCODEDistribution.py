@@ -10,6 +10,8 @@ class GOCODEDistribution(PhaseSpaceDistribution):
     def __init__(self, filename=None):
         super().__init__()
 
+        self.MAGIC = 'distribution/gocode'
+
         if filename is not None:
             self.load(filename)
 
@@ -23,8 +25,20 @@ class GOCODEDistribution(PhaseSpaceDistribution):
         path:     Path in HDF5 file where data is stored.
         timestep: Time step to load distribution for.
         """
+        def tos(v):
+            if v.dtype == 'O':
+                return v[:][0]
+            else:
+                return v[:].tostring().decode('utf-8')
+
         it = timestep
         with h5py.File(filename, 'r') as f:
+            if 'type' in f:
+                dtype = tos(f['type'][:])
+
+                if dtype != self.MAGIC:
+                    raise Exception("The given file is not a GO+CODE distribution function.")
+
             nt = int(f[path+'/nt'][:][0])
 
             if it < 0:

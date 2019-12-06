@@ -13,6 +13,7 @@ import Bekefi
 from Distribution.CODEDistribution import CODEDistribution
 from Distribution.DistributionFunction import DistributionFunction
 from Distribution.GOCODEDistribution import GOCODEDistribution
+from Distribution.SOFTDistribution import SOFTDistribution
 import GeriMap
 
 class DistributionFunctionUI(QtWidgets.QMainWindow):
@@ -246,7 +247,8 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
         # Try to open the distribution using different methods
         flist = [
             self.loadGOCODEDistribution,
-            self.loadCODEDistribution
+            self.loadCODEDistribution,
+            self.loadSOFTDistribution
         ]
 
         found = False
@@ -255,7 +257,8 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
                 f(filename)
                 found = True
                 break
-            except: pass
+            except Exception as ex:
+                pass
 
         if not found:
             QMessageBox.critical(self,
@@ -276,6 +279,12 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
         self.distfunc = GOCODEDistribution(filename)
 
         self.ui.lblDistType.setText('GO+CODE')
+
+
+    def loadSOFTDistribution(self, filename):
+        self.distfunc = SOFTDistribution(filename)
+
+        self.ui.lblDistType.setText('SOFT')
     
 
     def loadDistributionUI(self):
@@ -302,7 +311,7 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
         self.ui.sliderRadius.setMaximum(nr-1)
 
 
-    def plotSelection(self):
+    def plotSelection(self, vmin=None, vmax=None):
         first = False
         r  = self.getRadius()
 
@@ -310,37 +319,65 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
         if self.ui.rbDistParPerp.isChecked():
             if self.currentPlotHandle is not None:
                 self.ax.clear()
-
+            
             PPAR, PPERP, F = self.getParPerpDistribution(r)
-            self.currentPlotHandle = self.ax.contourf(PPAR, PPERP, F, cmap='GeriMap', levels=50, vmax=self.maxF)
-            self.setYLimit()
+
+            self.maxF = np.amax(F)
+            if self.logarithmicPlot:
+                self.maxF = np.power(10, self.maxF)
+            if vmax is None:
+                vmax = np.amax(F)
+
+            levels = None
+            if vmin is None:
+                if self.logarithmicPlot:
+                    levels = np.linspace(vmax-20, vmax, 50)
+                else:
+                    levels = np.linspace(vmax*1e-20, vmax, 50)
+            else:
+                if self.logarithmicPlot:
+                    levels = np.linspace(vmin, vmax, 50)
+                else:
+                    levels = np.linspace(vmin, vmax, 50)
+
+            self.currentPlotHandle = self.ax.contourf(PPAR, PPERP, F, cmap='GeriMap', levels=levels)
 
             self.ax.set_xlabel(r'$p_\parallel$')
             self.ax.set_ylabel(r'$p_\perp / mc$')
 
             self.ax.set_xlim([-self.maxP, self.maxP])
             self.ax.set_ylim([0, self.maxP])
-
-            self.maxF = np.amax(F)
-            if self.logarithmicPlot:
-                self.maxF = np.power(10, self.maxF)
         # D P/XI distribution
         elif self.ui.rbDistPXi.isChecked():
             if self.currentPlotHandle is not None:
                 self.ax.clear()
 
             P, XI, F = self.getPXiDistribution(r)
-            self.currentPlotHandle = self.ax.contourf(P, XI, F, cmap='GeriMap', levels=50, vmax=self.maxF)
-            self.setYLimit()
+
+            self.maxF = np.amax(F)
+            if self.logarithmicPlot:
+                self.maxF = np.power(10, self.maxF)
+            if vmax is None:
+                vmax = np.amax(F)
+
+            levels = None
+            if vmin is None:
+                if self.logarithmicPlot:
+                    levels = np.linspace(vmax-20, vmax, 50)
+                else:
+                    levels = np.linspace(vmax*1e-20, vmax, 50)
+            else:
+                if self.logarithmicPlot:
+                    levels = np.linspace(vmin, vmax, 50)
+                else:
+                    levels = np.linspace(vmin, vmax, 50)
+
+            self.currentPlotHandle = self.ax.contourf(P, XI, F, cmap='GeriMap', levels=levels)
             self.ax.set_xlim([0, self.maxP])
             self.ax.set_ylim([-1, 1])
 
             self.ax.set_xlabel(r'$p$')
             self.ax.set_ylabel(r'$\xi$')
-
-            self.maxF = np.amax(F)
-            if self.logarithmicPlot:
-                self.maxF = np.power(10, self.maxF)
         # 1D angle-averaged distribution
         elif self.ui.rbDist1D.isChecked():
             if self.currentPlotHandle is None:
@@ -494,9 +531,9 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
                 self.ax.set_ylim([minY, maxY])
         else:
             if self.logarithmicPlot:
-                self.currentPlotHandle.set_clim(vmin=np.log10(minY), vmax=np.log10(maxY))
+                self.plotSelection(vmin=np.log10(minY), vmax=np.log10(maxY))
             else:
-                self.currentPlotHandle.set_clim(vmin=minY, vmax=maxY)
+                self.plotSelection(vmin=minY, vmax=maxY)
 
         self.plotWindow.drawSafe()
 

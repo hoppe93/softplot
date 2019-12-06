@@ -8,6 +8,7 @@ class DistributionFunction:
         self.nr = None
         self.nmom = None
         self.r = list()
+        self.desc = ""
 
 
     def eval(self, r, P=None, XI=None):
@@ -18,6 +19,7 @@ class DistributionFunction:
         raise NotImplementedError("The method 'eval()' is not implemented in the base class 'DistributionFunction'.")
 
 
+    def getDescription(self): return self.desc
     def getMaxP(self): return self.maxp
     def getMomentum(self, rindex=None):
         raise Exception("Not implemented for this kind of distribution function.")

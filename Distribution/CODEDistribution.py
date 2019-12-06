@@ -79,7 +79,7 @@ class CODEDistribution(MomentumSpaceDistribution):
     def getCurrentDensity(self, r, p=None):
         """
         Returns the current density of the distribution function.
-        This is the vpar moment of f, corresponding to the first
+        This is the e*vpar moment of f, corresponding to the first
         Legendre mode times p/sqrt(1+p^2).
         """
         fp = self._codef[1,:]
@@ -138,7 +138,8 @@ class CODEDistribution(MomentumSpaceDistribution):
         self._codeInterpf = scipy.interpolate.interp1d(self._codeP, self._codef, bounds_error=False, fill_value=(0.0, 0.0))
 
         self.nr   = 1
-        self.nmom = (self._nleg, self._codeNp)
+        #self.nmom = (self._nleg, self._codeNp)
+        self.nmom = self._codeNp
         self.maxp = np.amax(self._codeP)
         self.r    = [0.0]
 
