@@ -236,14 +236,28 @@
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="rbDist1D">
-         <property name="text">
-          <string>Angle-averaged distribution</string>
+        <layout class="QHBoxLayout" name="horizontalLayout_16">
+         <property name="topMargin">
+          <number>0</number>
          </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
+         <item>
+          <widget class="QRadioButton" name="rbDist1D">
+           <property name="text">
+            <string>Angle-averaged distribution</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="rbCumCurrent">
+           <property name="text">
+            <string>Cumulative current density</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QLabel" name="label">

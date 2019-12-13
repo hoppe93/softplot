@@ -182,30 +182,55 @@ class PhaseSpaceDistribution(DistributionFunction):
         return self._distributions[rindex]
 
 
-    def getCurrentDensity(self, r=None):
+    def getCurrentDensity(self, r=None, p=None, cumulative=False):
         """
         Returns the radial current density for the distribution function.
 
-        r: Radial grid to evaluate the distribution on. If 'None',
-           uses the default radial grid.
+        r:          Radial grid to evaluate the distribution on. If 'None',
+                    uses the default radial grid.
+        p:          Momentum grid on which to evaluate the current density.
+                    If 'None', the default momentum grid of the first radius
+                    is used.
+        cumulative: If 'True', returns the "cumulative current density",
+                    i.e. j(p), where j(p0) is the current density carried
+                    by particles with momentum p <= p0.
         """
         mc = 9.109e-31 * 299792458.0
 
         if r is None:
             r = np.copy(self._radii)
 
+        if not hasattr(r, '__iter__'):
+            r = [r]
+
+        P = None
+        if p is not None:
+            P = p
+
         n = list()
         for radius in r:
             # Evaluate current moment of distribution
-            p, f = self.getCurrentMoment(radius)
-            # Calculate dp
-            dp = np.zeros(p.shape)
-            dp[:-1] = np.diff(p)
-            dp[-1] = dp[-2]
-            # Integrate angle-averaged distribution (4*pi * p**2 is the Jacobian)
-            n.append(4*np.pi*np.sum(f * p**2 * dp * mc**3))
+            p, f = self.getCurrentMoment(radius, p=P)
 
-        return r, np.array(n)
+            if P is None:
+                P = p
+
+            # Calculate dp
+            dp = np.zeros(P.shape)
+            dp[:-1] = np.diff(P)
+            dp[-1] = dp[-2]
+
+            if cumulative is False:
+                # Integrate angle-averaged distribution (4*pi * p**2 is the Jacobian)
+                n.append(4*np.pi*np.sum(f * P**2 * dp * mc**3))
+            else:
+                j = np.cumsum(4*np.pi*f * P**2 * dp * mc**3)
+                n.append(j)
+
+        if cumulative:
+            return r, P, np.array(n)
+        else:
+            return r, np.array(n)
 
 
     def getRadialDensity(self, r=None):

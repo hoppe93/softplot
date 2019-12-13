@@ -13,6 +13,7 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
     
     labels = {
         'gamma': r'$\gamma$',
+        'p': r'$p / mc$',
         'ppar': r'$p_{\parallel} / mc$',
         'pperp': r'$p_{\perp} / mc$',
         'thetap': r'$\theta_{\rm p}$ (rad)',

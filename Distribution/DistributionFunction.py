@@ -37,11 +37,15 @@ class DistributionFunction:
         raise Exception("Not implemented for this kind of distribution function.")
 
 
-    def getCurrentDensity(self, r=None):
+    def getCurrentDensity(self, r=None, cumulative=False):
         """
         Returns the current density for the distribution function
         on the given radial grid. The current density is the 
         vpar moment of the distribution function.
+
+        If 'cumulative' is True, the current density is returned
+        as a function j(p) of momentum, where j(p0) is the current
+        density carried by particles with momentum p <= p0.
         """
         raise Exception("Not implemented for this kind of distribution function.")
 

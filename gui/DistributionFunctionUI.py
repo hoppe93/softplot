@@ -68,6 +68,7 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
         self.ui.rbDistParPerp.toggled.connect(self.plotTypeChanged)
         self.ui.rbDistPXi.toggled.connect(self.plotTypeChanged)
         self.ui.rbDist1D.toggled.connect(self.plotTypeChanged)
+        self.ui.rbCumCurrent.toggled.connect(self.plotTypeChanged)
         self.ui.rbSynchrotron.toggled.connect(self.rbSynchrotronChanged)
         self.ui.rbRunaway.toggled.connect(self.rbRunawayChanged)
 
@@ -393,6 +394,29 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
             self.setYLimit()
 
             self.maxF = np.amax(fp)
+
+            self.ax.set_xlabel(r'$p$')
+            self.ax.set_ylabel(r'$f(p)$')
+        elif self.ui.rbCumCurrent.isChecked():
+            if self.currentPlotHandle is None:
+                lsc = self.linestyles[len(self.plotHandles)]
+                self.currentPlotHandle, = self.ax.plot([], [], lsc[1], color=lsc[0], linewidth=3)
+                first = True
+            
+            h = self.currentPlotHandle
+
+            _, p, j = self.distfunc.getCurrentDensity(r=r, cumulative=True)
+            if j[0,-1] < 0:
+                j = -j
+
+            h.set_data(p, j)
+            self.ax.set_xlim([0, self.maxP])
+
+            self.maxF = np.amax(j)
+            self.ax.set_ylim([0, self.maxF*1.1])
+
+            self.ax.set_xlabel(r'$p$')
+            self.ax.set_ylabel(r"$\int_0^p j(p')\,\mathrm{d}p'$ ($\mathrm{A}\cdot\mathrm{s}\cdot\mathrm{kg}^{-1}\cdot\mathrm{m}^{-3}$)")
         else:
             raise Exception("Unrecognized or no plot type selected.")
 
@@ -487,7 +511,6 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
             self.radialPlotWindow.show()
 
 
-
     def plotNow(self):
         self.plotTypeChanged(True)
 
@@ -496,7 +519,7 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
         if not checked: return
 
         # Enable/disable moments group box
-        self.ui.gbMoments.setEnabled(not self.ui.rbDist1D.isChecked())
+        self.ui.gbMoments.setEnabled(not (self.ui.rbDist1D.isChecked() or self.ui.rbCumCurrent.isChecked()))
 
         self.setupFigure()
 
@@ -524,7 +547,7 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
             QMessageBox.critical(self, 'Invalid Y-axis limits', "The Y-axis limits are specified in a invalid format.")
             return
 
-        if self.ui.rbDist1D.isChecked():
+        if self.ui.rbDist1D.isChecked() or self.ui.rbCumCurrent.isChecked():
             if self.logarithmicPlot:
                 self.ax.set_ylim([np.log10(minY), np.log10(maxY)])
             else:
