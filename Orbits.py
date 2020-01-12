@@ -20,7 +20,7 @@ class Orbits:
             self.load(filename)
 
     def load(self, filename):
-        with h5py.File(filename) as f:
+        with h5py.File(filename, 'r') as f:
             self.T        = f['t'][:,:]
             self.NORBITS  = self.T.shape[0]
             self.NT       = self.T.shape[1]

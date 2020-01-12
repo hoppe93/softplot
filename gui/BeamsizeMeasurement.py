@@ -318,7 +318,7 @@ class BeamsizeMeasurement(QtWidgets.QMainWindow):
         Save the currently displayed SOFT image to a PNG file.
         """
         if filename is False:
-            filename, _ = QFileDialog.getSaveFileName(self, caption='Save image', filter='Portable Network Graphics (*.png)')
+            filename, _ = QFileDialog.getSaveFileName(self, caption='Save PNG image', filter='Portable Network Graphics (*.png)')
 
         if filename:
             f = self.getRadialProfile()
@@ -338,9 +338,13 @@ class BeamsizeMeasurement(QtWidgets.QMainWindow):
         Save the currently displayed SOFT image to a PNG file.
         """
         if filename is False:
-            filename, _ = QFileDialog.getSaveFileName(self, caption='Save image', filter='Portable Network Graphics (*.png)')
+            filename, _ = QFileDialog.getSaveFileName(self, caption='Save image', filter='Portable Document Format (*.pdf);;Portable Network Graphics (*.png)')
 
         if not filename: return
+
+        if filename.endswith('.png'):
+            self.saveImagePNG(filename=filename)
+            return
 
         self.imageAx.set_axis_off()
         self.plotWindow.figure.subplots_adjust(top=1, bottom=0, right=1, left=0, hspace=0, wspace=0)
