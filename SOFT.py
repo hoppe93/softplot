@@ -19,7 +19,7 @@ except KeyError:
     SOFTPATH = None
 
 
-def runOrbit(minradius, maxradius, nradius, momentum, pitchangle, meqfile, particleOrbit=False, drifts=True, gc_position=True):
+def runOrbit(minradius, maxradius, nradius, momentum, pitchangle, meqfile, particleOrbit=False, drifts=True, gc_position=True, reverseOrbit=False):
     """
     Simulates the given particle orbit (for an electron) with SOFT. If
     'particleOrbit' is True, then the full particle orbit is followed. The
@@ -27,7 +27,7 @@ def runOrbit(minradius, maxradius, nradius, momentum, pitchangle, meqfile, parti
     """
 
     # First, we simulate the GC orbit
-    pi, outfile = _generateOrbitPi(minradius, maxradius, nradius, momentum, pitchangle, meqfile, gc_position=(gc_position and not particleOrbit), drifts=(drifts or particleOrbit))
+    pi, outfile = _generateOrbitPi(minradius, maxradius, nradius, momentum, pitchangle, meqfile, gc_position=(gc_position and not particleOrbit), drifts=(drifts or particleOrbit), reverseOrbit=reverseOrbit)
     runSOFT(pi)
 
     orbs = Orbits(outfile)
@@ -47,7 +47,7 @@ def runOrbit(minradius, maxradius, nradius, momentum, pitchangle, meqfile, parti
 
     return T, X, Y, Z
 
-def _generateOrbitPi(minradius, maxradius, nradius, momentum, pitchangle, meqfile, particleOrbit=False, gc_position=False, drifts=True, time=-1.0):
+def _generateOrbitPi(minradius, maxradius, nradius, momentum, pitchangle, meqfile, particleOrbit=False, gc_position=False, drifts=True, time=-1.0, reverseOrbit=False):
     """
     radius: Radius at which to initialize particle
     momentum: Momentum with which to initialize particle
@@ -76,7 +76,12 @@ def _generateOrbitPi(minradius, maxradius, nradius, momentum, pitchangle, meqfil
     pi += "@ParticleGenerator PGen {\n"
     pi += "    rho         = {0},{1},{2};\n".format(minradius, maxradius, nradius)
     pi += "    p           = {0},{0},1;\n".format(momentum)
-    pi += "    thetap      = {0},{0},1;\n".format(pitchangle)
+
+    if reverseOrbit:
+        pi += "    ithetap      = {0},{0},1;\n".format(pitchangle)
+    else:
+        pi += "    thetap      = {0},{0},1;\n".format(pitchangle)
+
     pi += "    gc_position = {0};\n".format('yes' if gc_position else 'no')
     pi += "}\n\n"
 
@@ -99,6 +104,8 @@ def _generateOrbitPi(minradius, maxradius, nradius, momentum, pitchangle, meqfil
     pi += "@Orbits orbits {\n"
     pi += "    output = \"{0}\";\n".format(outfile)
     pi += "}\n"
+
+    print(pi)
 
     return pi, outfile
 

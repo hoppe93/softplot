@@ -172,7 +172,7 @@ class MeqWindow(QtWidgets.QMainWindow):
         theta = self.ui.dsbPitch.value()
 
         try:
-            T, X, Y, Z = SOFT.runOrbit(minradius=r, maxradius=r, nradius=1, momentum=p, pitchangle=theta, meqfile=self.ui.tbMeqFile.text(), gc_position=False)
+            T, X, Y, Z = SOFT.runOrbit(minradius=r, maxradius=r, nradius=1, momentum=p, pitchangle=theta, meqfile=self.ui.tbMeqFile.text(), gc_position=False, reverseOrbit=self.ui.cbReverseOrbit.isChecked())
             R = np.sqrt(X**2 + Y**2)
 
             self.meqplot.plotOrbit(R[0], Z[0])
@@ -192,7 +192,7 @@ class MeqWindow(QtWidgets.QMainWindow):
         theta = self.ui.dsbPitch.value()
 
         try:
-            T, X, Y, Z = SOFT.runOrbit(minradius=r, maxradius=r, nradius=1, momentum=p, pitchangle=theta, meqfile=self.ui.tbMeqFile.text(), particleOrbit=True)
+            T, X, Y, Z = SOFT.runOrbit(minradius=r, maxradius=r, nradius=1, momentum=p, pitchangle=theta, meqfile=self.ui.tbMeqFile.text(), particleOrbit=True, reverseOrbit=self.ui.cbReverseOrbit.isChecked())
             R = np.sqrt(X**2 + Y**2)
 
             self.meqplot.plotOrbit(R, Z)
@@ -217,6 +217,7 @@ class MeqWindow(QtWidgets.QMainWindow):
         Z = event.ydata
 
         self.evalBAt(R, Z)
+
 
 ######################################
 # PLOT WINDOW CLASS

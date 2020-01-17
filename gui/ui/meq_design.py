@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/meq.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.10.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -150,14 +150,14 @@ class Ui_MeqWindow(object):
         self.lblMaxis.setObjectName("lblMaxis")
         self.gbOrbits = QtWidgets.QGroupBox(self.centralwidget)
         self.gbOrbits.setEnabled(False)
-        self.gbOrbits.setGeometry(QtCore.QRect(320, 450, 301, 241))
+        self.gbOrbits.setGeometry(QtCore.QRect(320, 450, 301, 281))
         font = QtGui.QFont()
         font.setBold(True)
         font.setWeight(75)
         self.gbOrbits.setFont(font)
         self.gbOrbits.setObjectName("gbOrbits")
         self.btnClearOrbits = QtWidgets.QPushButton(self.gbOrbits)
-        self.btnClearOrbits.setGeometry(QtCore.QRect(10, 200, 281, 28))
+        self.btnClearOrbits.setGeometry(QtCore.QRect(10, 240, 281, 28))
         font = QtGui.QFont()
         font.setBold(False)
         font.setWeight(50)
@@ -227,6 +227,13 @@ class Ui_MeqWindow(object):
         self.dsbPitch.setSingleStep(0.01)
         self.dsbPitch.setProperty("value", 0.1)
         self.dsbPitch.setObjectName("dsbPitch")
+        self.cbReverseOrbit = QtWidgets.QCheckBox(self.gbOrbits)
+        self.cbReverseOrbit.setGeometry(QtCore.QRect(10, 190, 281, 23))
+        font = QtGui.QFont()
+        font.setBold(False)
+        font.setWeight(50)
+        self.cbReverseOrbit.setFont(font)
+        self.cbReverseOrbit.setObjectName("cbReverseOrbit")
         self.label_9 = QtWidgets.QLabel(self.centralwidget)
         self.label_9.setGeometry(QtCore.QRect(10, 780, 421, 31))
         font = QtGui.QFont()
@@ -268,7 +275,7 @@ class Ui_MeqWindow(object):
         self.lblSampledB.setObjectName("lblSampledB")
         MeqWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MeqWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 635, 24))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 635, 22))
         self.menubar.setObjectName("menubar")
         MeqWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MeqWindow)
@@ -307,6 +314,7 @@ class Ui_MeqWindow(object):
         self.label_4.setText(_translate("MeqWindow", "Radial position (m):"))
         self.label_5.setText(_translate("MeqWindow", "Momentum (MeV/c):"))
         self.label_6.setText(_translate("MeqWindow", "Pitch angle (rad):"))
+        self.cbReverseOrbit.setText(_translate("MeqWindow", "Reverse current direction"))
         self.label_9.setText(_translate("MeqWindow", "Click on plot to get magnetic field strength!"))
         self.label_10.setText(_translate("MeqWindow", "(R,Z) ="))
         self.label_11.setText(_translate("MeqWindow", "B = "))
