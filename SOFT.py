@@ -37,7 +37,7 @@ def runOrbit(minradius, maxradius, nradius, momentum, pitchangle, meqfile, parti
 
     # Simulate particle orbit
     if particleOrbit:
-        pi, outfile = _generateOrbitPi(minradius, maxradius, nradius, momentum, pitchangle, meqfile, particleOrbit=particleOrbit, time=T[0,-1])
+        pi, outfile = _generateOrbitPi(minradius, maxradius, nradius, momentum, pitchangle, meqfile, particleOrbit=particleOrbit, time=T[0,-1], reverseOrbit=reverseOrbit)
         runSOFT(pi)
 
         orbs = Orbits(outfile).getOrbitByIndex(0)
@@ -104,8 +104,6 @@ def _generateOrbitPi(minradius, maxradius, nradius, momentum, pitchangle, meqfil
     pi += "@Orbits orbits {\n"
     pi += "    output = \"{0}\";\n".format(outfile)
     pi += "}\n"
-
-    print(pi)
 
     return pi, outfile
 
