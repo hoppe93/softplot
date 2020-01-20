@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/meq.ui'
 #
-# Created by: PyQt5 UI code generator 5.14.1
+# Created by: PyQt5 UI code generator 5.14.0
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -295,6 +295,9 @@ class Ui_MeqWindow(object):
         self.lblMajorRadius = QtWidgets.QLabel(self.centralwidget)
         self.lblMajorRadius.setGeometry(QtCore.QRect(150, 780, 66, 19))
         self.lblMajorRadius.setObjectName("lblMajorRadius")
+        self.btnSightlines = QtWidgets.QPushButton(self.centralwidget)
+        self.btnSightlines.setGeometry(QtCore.QRect(320, 740, 301, 27))
+        self.btnSightlines.setObjectName("btnSightlines")
         MeqWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MeqWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 635, 24))
@@ -348,3 +351,4 @@ class Ui_MeqWindow(object):
         self.lblMinorRadius.setText(_translate("MeqWindow", "0 m"))
         self.label_14.setText(_translate("MeqWindow", "Max major radius ="))
         self.lblMajorRadius.setText(_translate("MeqWindow", "0 m"))
+        self.btnSightlines.setText(_translate("MeqWindow", "Sightline mappings"))

@@ -7,9 +7,13 @@ import h5py
 
 class LineOfSightGeometry:
     
-    def __init__(self, position, nhat, alpha, aperture, spectrum):
+    def __init__(self, filename=None, position=None, nhat=None, alpha=None, aperture=None, spectrum=None):
         """
         Constructor.
+
+        filename: Name of file to load geometry from.
+
+          OR
 
         position: Position of origin of lines-of-sight (where all LoS
                   intersect).
@@ -19,11 +23,17 @@ class LineOfSightGeometry:
         spectrum: Tuple specifying the LoS spectral range and resolution
                   (when running SOFT). Syntax: (lambdaMin, lambdaMax, nLambda)
         """
-        self.position = position
-        self.nhat     = nhat
-        self.alpha    = alpha
-        self.aperture = aperture
-        self.spectrum = spectrum
+        if filename is not None:
+            self.load(filename)
+        else:
+            if position is None or nhat is None or alpha is None or aperture is None or spectrum is None:
+                raise Exception("All of 'position', 'nhat', 'alpha', 'aperture' or 'spectrum' must be specified.")
+
+            self.position = position
+            self.nhat     = nhat
+            self.alpha    = alpha
+            self.aperture = aperture
+            self.spectrum = spectrum
 
     
     def generatePiScript(self, filename=None, prefix="mse"):
@@ -75,5 +85,33 @@ class LineOfSightGeometry:
         Returns the number of lines-of-sight represented by this object.
         """
         return self.nhat.shape[0]
+
+
+    def load(self, filename):
+        """
+        Load line-of-sight geometry from the specified file.
+
+        filename: Name of (HDF5) file to load line-of-sight geometry from.
+        """
+        with h5py.File(filename, 'r') as f:
+            self.position = f['position'][:]
+            self.nhat = f['nhat'][:]
+            self.alpha = f['alpha'][:]
+            self.aperture = f['aperture'][:]
+            self.spectrum = f['spectrum'][:]
+
+
+    def save(self, filename):
+        """
+        Save this line-of-sight geometry to the file with the given name.
+
+        filename: Name of file to save line-of-sight geometry to.
+        """
+        with h5py.File(filename, 'w') as f:
+            f.create_dataset('position', self.position.shape, data=self.position)
+            f.create_dataset('nhat', self.nhat.shape, data=self.nhat)
+            f.create_dataset('alpha', self.alpha.shape, data=self.alpha)
+            f.create_dataset('aperture', self.aperture.shape, data=self.aperture)
+            f.create_dataset('spectrum', self.spectrum.shape, data=self.spectrum)
 
 

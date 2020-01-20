@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QMessageBox
 
 from MeqPlot import MeqPlot
+from SightlineMappingsWindow import SightlineMappingsWindow
 
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -38,12 +39,16 @@ class MeqWindow(QtWidgets.QMainWindow):
         self.plotWindow = PlotWindow()
         self.meqplot = MeqPlot(self.plotWindow.figure, self.plotWindow.canvas)
 
+        # Sightline mappings window
+        self.sightlineMappingsWindow = SightlineMappingsWindow()
+
         # Bind to events
         self.bindEvents()
 
         # Check command-line arguments
         if filename is not None and os.path.isfile(filename):
             self.loadFile(filename)
+
 
     def bindEvents(self):
         # Browse
@@ -65,6 +70,9 @@ class MeqWindow(QtWidgets.QMainWindow):
         self.ui.btnGCOrbit.clicked.connect(self.plotGCOrbit)
         self.ui.btnParticleOrbit.clicked.connect(self.plotParticleOrbit)
         self.ui.btnClearOrbits.clicked.connect(self.clearOrbits)
+
+        # Sightline handling
+        self.ui.btnSightlines.clicked.connect(self.sightlineMappings)
 
         # Plot-window
         self.plotWindow.canvas.mpl_connect('button_press_event', self.pointSelected)
@@ -219,6 +227,10 @@ class MeqWindow(QtWidgets.QMainWindow):
         Z = event.ydata
 
         self.evalBAt(R, Z)
+
+
+    def sightlineMappings(self):
+        self.sightlineMappingsWindow.show()
 
 
 ######################################
