@@ -2,16 +2,18 @@
 
 # Form implementation generated from reading ui file 'ui/meq.ui'
 #
-# Created by: PyQt5 UI code generator 5.10.1
+# Created by: PyQt5 UI code generator 5.14.1
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MeqWindow(object):
     def setupUi(self, MeqWindow):
         MeqWindow.setObjectName("MeqWindow")
-        MeqWindow.resize(635, 857)
+        MeqWindow.resize(635, 884)
         self.centralwidget = QtWidgets.QWidget(MeqWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.tbMeqFile = QtWidgets.QLineEdit(self.centralwidget)
@@ -235,7 +237,7 @@ class Ui_MeqWindow(object):
         self.cbReverseOrbit.setFont(font)
         self.cbReverseOrbit.setObjectName("cbReverseOrbit")
         self.label_9 = QtWidgets.QLabel(self.centralwidget)
-        self.label_9.setGeometry(QtCore.QRect(10, 780, 421, 31))
+        self.label_9.setGeometry(QtCore.QRect(10, 800, 421, 31))
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(False)
@@ -265,17 +267,37 @@ class Ui_MeqWindow(object):
         self.label_12.setFont(font)
         self.label_12.setObjectName("label_12")
         self.lblBComp = QtWidgets.QLabel(self.centralwidget)
-        self.lblBComp.setGeometry(QtCore.QRect(130, 740, 491, 20))
+        self.lblBComp.setGeometry(QtCore.QRect(150, 740, 431, 20))
         self.lblBComp.setObjectName("lblBComp")
         self.lblBStrength = QtWidgets.QLabel(self.centralwidget)
-        self.lblBStrength.setGeometry(QtCore.QRect(130, 720, 491, 20))
+        self.lblBStrength.setGeometry(QtCore.QRect(150, 720, 361, 20))
         self.lblBStrength.setObjectName("lblBStrength")
         self.lblSampledB = QtWidgets.QLabel(self.centralwidget)
-        self.lblSampledB.setGeometry(QtCore.QRect(130, 700, 481, 20))
+        self.lblSampledB.setGeometry(QtCore.QRect(150, 700, 391, 20))
         self.lblSampledB.setObjectName("lblSampledB")
+        self.label_13 = QtWidgets.QLabel(self.centralwidget)
+        self.label_13.setGeometry(QtCore.QRect(10, 760, 121, 19))
+        font = QtGui.QFont()
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_13.setFont(font)
+        self.label_13.setObjectName("label_13")
+        self.lblMinorRadius = QtWidgets.QLabel(self.centralwidget)
+        self.lblMinorRadius.setGeometry(QtCore.QRect(150, 760, 421, 19))
+        self.lblMinorRadius.setObjectName("lblMinorRadius")
+        self.label_14 = QtWidgets.QLabel(self.centralwidget)
+        self.label_14.setGeometry(QtCore.QRect(10, 780, 141, 19))
+        font = QtGui.QFont()
+        font.setBold(True)
+        font.setWeight(75)
+        self.label_14.setFont(font)
+        self.label_14.setObjectName("label_14")
+        self.lblMajorRadius = QtWidgets.QLabel(self.centralwidget)
+        self.lblMajorRadius.setGeometry(QtCore.QRect(150, 780, 66, 19))
+        self.lblMajorRadius.setObjectName("lblMajorRadius")
         MeqWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MeqWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 635, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 635, 24))
         self.menubar.setObjectName("menubar")
         MeqWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MeqWindow)
@@ -322,4 +344,7 @@ class Ui_MeqWindow(object):
         self.lblBComp.setText(_translate("MeqWindow", "(0, 0, 0) T"))
         self.lblBStrength.setText(_translate("MeqWindow", "0 T"))
         self.lblSampledB.setText(_translate("MeqWindow", "(0, 0) m"))
-
+        self.label_13.setText(_translate("MeqWindow", "Minor radius ="))
+        self.lblMinorRadius.setText(_translate("MeqWindow", "0 m"))
+        self.label_14.setText(_translate("MeqWindow", "Max major radius ="))
+        self.lblMajorRadius.setText(_translate("MeqWindow", "0 m"))

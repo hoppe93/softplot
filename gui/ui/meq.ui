@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>635</width>
-    <height>857</height>
+    <height>884</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -628,7 +628,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>780</y>
+      <y>800</y>
       <width>421</width>
       <height>31</height>
      </rect>
@@ -705,9 +705,9 @@
    <widget class="QLabel" name="lblBComp">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>150</x>
       <y>740</y>
-      <width>491</width>
+      <width>431</width>
       <height>20</height>
      </rect>
     </property>
@@ -718,9 +718,9 @@
    <widget class="QLabel" name="lblBStrength">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>150</x>
       <y>720</y>
-      <width>491</width>
+      <width>361</width>
       <height>20</height>
      </rect>
     </property>
@@ -731,14 +731,78 @@
    <widget class="QLabel" name="lblSampledB">
     <property name="geometry">
      <rect>
-      <x>130</x>
+      <x>150</x>
       <y>700</y>
-      <width>481</width>
+      <width>391</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>(0, 0) m</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_13">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>760</y>
+      <width>121</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Minor radius =</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblMinorRadius">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>760</y>
+      <width>421</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0 m</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_14">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>780</y>
+      <width>141</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Max major radius =</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="lblMajorRadius">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>780</y>
+      <width>66</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0 m</string>
     </property>
    </widget>
   </widget>
@@ -748,7 +812,7 @@
      <x>0</x>
      <y>0</y>
      <width>635</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

@@ -131,8 +131,10 @@ class MeqWindow(QtWidgets.QMainWindow):
         # Get plasma boundaries
         r0, rmax = self.meqplot.getPlasmaBoundaries()
 
-        self.ui.dsbRadius.setRange(r0, rmax)
+        self.ui.dsbRadius.setRange(r0, rmax*2)
         self.ui.dsbRadius.setValue(r0+(rmax-r0)*0.6)
+        self.ui.lblMinorRadius.setText('{:.2f} cm'.format((rmax-r0)*100))
+        self.ui.lblMajorRadius.setText('{:.2f} m'.format(rmax))
 
         # Calculate magnetic field at axis
         self.evalBAt(self.meqplot.magneticfield.maxis[0], self.meqplot.magneticfield.maxis[1])
