@@ -154,6 +154,7 @@ class MagneticField:
         try: self.separatrix = f['separatrix']
         except KeyError: pass
     
+
     def writeFile(self):
         """
         Sets the name and description to the given values and writes
@@ -168,59 +169,56 @@ class MagneticField:
         if self.filename is None:
             raise ValueError("Magnetic field filename may not be 'None'.")
 
-        #if self.filename.endswith('.mat'):
-        #    tos = lambda v : np.array([[np.uint16(ord(c)) for c in v]]).T
-        #else:
-        tos = lambda v : np.array(list(v), dtype='S1')
-        #tos = lambda s : s
-        
-        # This only works if variables are created with the
-        # 'extendable' property, which is, in general, not true.
-        # In that case, we must rewrite the file completely, and
-        # since the file may be a MAT file, we have to handle
-        # that scenario as well.
-
-        #with h5py.File(self.filename, 'a') as f:
-        #    f['name'] = tos(name)
-        #    f['description'] = tos(description)
-
         # Write to temporary file first (in case something is
         # screwed up)
         tf = next(tempfile._get_candidate_names())+'.h5'
         try:
             with h5py.File(tf, 'w') as f:
-                dsBphi = f.create_dataset('Bphi', self.Bphi.shape, data=self.Bphi)
-                dsBr   = f.create_dataset('Br', self.Br.shape, data=self.Br)
-                dsBz   = f.create_dataset('Bz', self.Bz.shape, data=self.Bz)
-
-                ddesc = tos(self.description)
-                dname = tos(self.name)
-                dsdesc = f.create_dataset('desc', ddesc.shape, dtype="S1", data=ddesc)
-                dsname = f.create_dataset('name', dname.shape, dtype="S1", data=dname)
-
-                dsmaxis = f.create_dataset('maxis', self.maxis.shape, data=self.maxis)
-                dsr     = f.create_dataset('r', self.r.shape, data=self.r)
-                dsz     = f.create_dataset('z', self.z.shape, data=self.z)
-
-                if self.verBphi is not None:
-                    dsVerBp = f.create_dataset('verBphi', self.verBphi.shape, data=self.verBphi)
-                if self.verBr is not None:
-                    dsVerBr = f.create_dataset('verBr', self.verBr.shape, data=self.verBr)
-                if self.verBz is not None:
-                    dsVerBz = f.create_dataset('verBz', self.verBz.shape, data=self.verBz)
-
-                if self.Psi is not None:
-                    dsPsi   = f.create_dataset('Psi', self.Psi.shape, data=self.Psi)
-                if self.separatrix is not None:
-                    dssep   = f.create_dataset('separatrix', self.separatrix.shape, data=self.separatrix)
-                if self.wall is not None:
-                    dswall  = f.create_dataset('wall', self.wall.shape, data=self.wall)
+                self.store(tf)
         except Exception as ex:
             os.remove(tf)
             raise ex
 
         os.remove(self.filename)
         os.rename(tf, self.filename)
+
+
+    def store(self, f):
+        """
+        Stores this magnetic field in the given HDF5 file.
+        """
+        #if self.filename.endswith('.mat'):
+        #    tos = lambda v : np.array([[np.uint16(ord(c)) for c in v]]).T
+        #else:
+        tos = lambda v : np.array(list(v), dtype='S1')
+        #tos = lambda s : s
+        
+        dsBphi = f.create_dataset('Bphi', self.Bphi.shape, data=self.Bphi)
+        dsBr   = f.create_dataset('Br', self.Br.shape, data=self.Br)
+        dsBz   = f.create_dataset('Bz', self.Bz.shape, data=self.Bz)
+
+        ddesc = tos(self.description)
+        dname = tos(self.name)
+        dsdesc = f.create_dataset('desc', ddesc.shape, dtype="S1", data=ddesc)
+        dsname = f.create_dataset('name', dname.shape, dtype="S1", data=dname)
+
+        dsmaxis = f.create_dataset('maxis', self.maxis.shape, data=self.maxis)
+        dsr     = f.create_dataset('r', self.r.shape, data=self.r)
+        dsz     = f.create_dataset('z', self.z.shape, data=self.z)
+
+        if self.verBphi is not None:
+            dsVerBp = f.create_dataset('verBphi', self.verBphi.shape, data=self.verBphi)
+        if self.verBr is not None:
+            dsVerBr = f.create_dataset('verBr', self.verBr.shape, data=self.verBr)
+        if self.verBz is not None:
+            dsVerBz = f.create_dataset('verBz', self.verBz.shape, data=self.verBz)
+
+        if self.Psi is not None:
+            dsPsi   = f.create_dataset('Psi', self.Psi.shape, data=self.Psi)
+        if self.separatrix is not None:
+            dssep   = f.create_dataset('separatrix', self.separatrix.shape, data=self.separatrix)
+        if self.wall is not None:
+            dswall  = f.create_dataset('wall', self.wall.shape, data=self.wall)
             
 
     def getSeparatrix(self):

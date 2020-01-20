@@ -14,9 +14,15 @@ from BeamsizeMeasurement import BeamsizeMeasurement
 from GreensFunctionR12 import GreensFunctionR12
 from GreensFunctionIJ import GreensFunctionIJ
 
+import makepng
+
 from GeriMap import registerGeriMap
 
 app = None
+
+
+def make_png(argv):
+    return makepng.save(argv)
 
 
 def show_detcal(argv):
@@ -103,6 +109,8 @@ if __name__ == '__main__':
         sys.exit(show_greenij(sys.argv[2:]))
     elif sys.argv[1] == '12' or sys.argv[1] == 'r12':
         sys.exit(show_r12(sys.argv[2:]))
+    elif sys.argv[1] == 'png':
+        sys.exit(make_png(sys.argv[2:]))
     elif sys.argv[1] == 'rij':
         sys.exit(show_rij(sys.argv[2:]))
     elif sys.argv[1] == 's12ij':
