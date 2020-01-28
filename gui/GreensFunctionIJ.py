@@ -227,6 +227,7 @@ class GreensFunctionIJ(QtWidgets.QMainWindow):
         Returns the appropriate image to draw based on
         how the GUI controls are set.
         """
+        Fmax, Fmin = None, 0
         F = self.gf.FUNC
         colormap = 'GeriMap'
 
@@ -234,7 +235,6 @@ class GreensFunctionIJ(QtWidgets.QMainWindow):
         if self.stokesbox is not None:
             val = self.stokesbox.currentText()
 
-            Fmax, Fmin = None, 0
             if val == "Polarization angle":
                 F = 0.5 * np.arctan2(F[2], F[1]) * 180/np.pi
                 Fmax, Fmin = 90, -90
