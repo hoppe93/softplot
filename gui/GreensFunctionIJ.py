@@ -237,7 +237,8 @@ class GreensFunctionIJ(QtWidgets.QMainWindow):
 
             if val == "Polarization angle":
                 F = 0.5 * np.arctan2(F[2], F[1]) * 180/np.pi
-                Fmax, Fmin = 90, -90
+                F[np.where(F < -45)] += 180
+                Fmax, Fmin = 135, -45
                 colormap = 'RdBu'
             elif val == "Polarization fraction":
                 F = np.sqrt(F[1]**2 + F[2]**2) / F[0]
@@ -247,10 +248,19 @@ class GreensFunctionIJ(QtWidgets.QMainWindow):
                 F = F[0]
             elif val == "Stokes Q":
                 F = F[1]
+                fmax = max(abs(np.amax(F)), abs(np.amin(F)))
+                Fmax, Fmin = fmax, -fmax
+                colormap = 'RdBu'
             elif val == "Stokes U":
                 F = F[2]
+                fmax = max(abs(np.amax(F)), abs(np.amin(F)))
+                Fmax, Fmin = fmax, -fmax
+                colormap = 'RdBu'
             elif val == "Stokes V":
                 F = F[3]
+                fmax = max(abs(np.amax(F)), abs(np.amin(F)))
+                Fmax, Fmin = fmax, -fmax
+                colormap = 'RdBu'
             else:
                 raise Exception("INTERNAL ERROR: Unrecognized polarization quantity select: '{}'.".format(val))
 

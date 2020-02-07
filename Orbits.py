@@ -15,11 +15,31 @@ class Orbits:
         self.R        = None
         self.XYZ      = None
         self.Z        = None
+        self.CLASSIFICATION = None
+        
+        self._radius     = None
+        self._param1     = None
+        self._param2     = None
+        self._param1name = None
+        self._param2name = None
+
+        self.CLASS_UNKNOWN    = 0
+        self.CLASS_COLLIDED   = 1
+        self.CLASS_STAGNATION = 2
+        self.CLASS_PASSING    = 3
+        self.CLASS_TRAPPED    = 4
 
         if filename is not None:
             self.load(filename)
 
     def load(self, filename):
+        # Convert array to string (MAT-files store strings as
+        # arrays with 2 bytes per character)
+        if filename.endswith('.mat'):
+            tos = lambda v : "".join(map(chr, v[:,:][:,0].tolist()))
+        else:
+            tos = lambda v : v[:].tostring().decode('utf-8')
+
         with h5py.File(filename, 'r') as f:
             self.T        = f['t'][:,:]
             self.NORBITS  = self.T.shape[0]
@@ -29,8 +49,29 @@ class Orbits:
             self.SOLUTION = f['solution'][:,:]
             self.XYZ      = f['x'][:,:]
 
+            self.CLASSIFICATION = f['classification'][:]
+
+            try:
+                self._radius     = f['r'][:]
+                self._param1name = tos(f['param1name'][:])
+                self._param2name = tos(f['param2name'][:])
+                self._param1     = f['param1'][:]
+                self._param2     = f['param2'][:]
+
+                self._nr = self._radius.size
+                self._n1 = self._param1.size
+                self._n2 = self._param2.size
+            except:
+                # Grid parameters not found...
+                self._r = None
+                self._param1name = None
+                self._param2name = None
+                self._param1 = None
+                self._param2 = None
+
+
         for i in range(0, self.NORBITS):
-            self.ORBITS.append(Orbit(self.NT, self.T[i,:], self.XYZ[i,:], self.P[i,:], self.SOLUTION[i,:]))
+            self.ORBITS.append(Orbit(self.NT, self.T[i,:], self.XYZ[i,:], self.P[i,:], self.SOLUTION[i,:], self.CLASSIFICATION[i]))
 
     def orbits(self):
         return self.ORBITS
@@ -42,7 +83,7 @@ class Orbits:
         if oindex >= self.NORBITS:
             raise IndexError('Requested orbit index is >= number of orbits')
 
-        return Orbit(self.NT, self.T[oindex,:], self.XYZ[oindex,:], self.P[oindex,:], self.SOLUTION[oindex,:])
+        return Orbit(self.NT, self.T[oindex,:], self.XYZ[oindex,:], self.P[oindex,:], self.SOLUTION[oindex,:], self.CLASSIFICATION[oindex])
 
     def getTXYZ(self):
         X, Y, Z = [], [], []

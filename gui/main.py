@@ -9,6 +9,7 @@ from DetectorCalibration import DetectorCalibration
 from DistributionFunctionUI import DistributionFunctionUI
 from ImageWindow import ImageWindow
 from MeqWindow import MeqWindow
+from OrbitWindow import OrbitWindow
 from SingleEnergyPitchIJ import SingleEnergyPitchIJ
 from BeamsizeMeasurement import BeamsizeMeasurement
 from GreensFunctionR12 import GreensFunctionR12
@@ -65,6 +66,14 @@ def show_meq(argv):
     return app.exec_()
 
 
+def show_orbits(argv):
+    global app
+
+    owindow = OrbitWindow(argv)
+    owindow.show()
+    return app.exec_()
+
+
 def show_r12(argv):
     global app
 
@@ -109,6 +118,8 @@ if __name__ == '__main__':
         sys.exit(show_greenij(sys.argv[2:]))
     elif sys.argv[1] == '12' or sys.argv[1] == 'r12':
         sys.exit(show_r12(sys.argv[2:]))
+    elif sys.argv[1] == 'orbit' or sys.argv[1] == 'orbits':
+        sys.exit(show_orbits(sys.argv[2:]))
     elif sys.argv[1] == 'png':
         sys.exit(make_png(sys.argv[2:]))
     elif sys.argv[1] == 'rij':
