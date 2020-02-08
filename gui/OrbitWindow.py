@@ -6,6 +6,7 @@ import numpy as np
 import os
 
 from PlotWindow import PlotWindow
+from PlotSliderWindow import PlotSliderWindow
 from Orbits import Orbits
 from Orbit import Orbit
 import matplotlib.pyplot as plt
@@ -22,12 +23,14 @@ class OrbitWindow(QtWidgets.QMainWindow):
         self.ui = orbits_design.Ui_Orbits()
         self.ui.setupUi(self)
 
+        self.ORBIT_CLASS_DISCARDED = 5
         self.CLASSNAMES = [
             'Unknown',
             'Collided',
             'Stagnated',
             'Passing',
-            'Trapped'
+            'Trapped',
+            'Discarded'
         ]
         self.PARAMNAMES = {
             'gamma':   'Energy (mc^2)',
@@ -47,6 +50,20 @@ class OrbitWindow(QtWidgets.QMainWindow):
 
         self.orbits = None
 
+        # Plot windows (for 1D plots)
+        self.windows = {}
+        self.windows['Orbit1D']  = (PlotWindow(800, 500), self.updatePlotOrbit1D)
+        self.windows['Orbit2D']  = (PlotWindow(), self.updatePlotOrbit2D)
+        self.windows['Ppar']     = (PlotWindow(800, 500), self.updatePlotPpar)
+        self.windows['Pperp']    = (PlotWindow(800, 500), self.updatePlotPperp)
+        self.windows['Pitch']    = (PlotWindow(800, 500), self.updatePlotPitch)
+        self.windows['B']        = (PlotWindow(800, 500), self.updatePlotB)
+        self.windows['Time']     = (PlotWindow(800, 500), self.updatePlotTime)
+        self.windows['Jacobian'] = (PlotWindow(800, 500), self.updatePlotJ)
+
+        self.spaceWindows = {}
+        self.spaceWindows['class'] = PlotSliderWindow(800, 500)
+
         self.toggleEnabled(False)
         self.bindEvents()
 
@@ -58,6 +75,17 @@ class OrbitWindow(QtWidgets.QMainWindow):
         self.ui.btnBrowse.clicked.connect(self.browseFile)
 
         self.ui.hsRadius.valueChanged.connect(self.hsRadiusChanged)
+        self.ui.hsParam1.valueChanged.connect(self.hsParam1Changed)
+        self.ui.hsParam2.valueChanged.connect(self.hsParam2Changed)
+
+        self.ui.btnPlotOrbit1D.clicked.connect(self.plotOrbit1D)
+        self.ui.btnPlotOrbit2D.clicked.connect(self.plotOrbit2D)
+        self.ui.btnPlotPpar.clicked.connect(self.plotPpar)
+        self.ui.btnPlotPperp.clicked.connect(self.plotPperp)
+        self.ui.btnPlotPitch.clicked.connect(self.plotPitch)
+        self.ui.btnPlotB.clicked.connect(self.plotB)
+
+        self.ui.btnShowClassification.clicked.connect(self.plotClassification)
 
 
     def browseFile(self):
@@ -71,7 +99,31 @@ class OrbitWindow(QtWidgets.QMainWindow):
         if filename:
             self.loadFile(filename)
 
+
+    def closeEvent(self, event):
+        self.exit()
+
+
+    def exit(self):
+        for _, w in self.windows.items():
+            if w[0].isVisible():
+                w[0].close()
+
+        self.close()
+
     
+    def getSelectedOrbit(self):
+        """
+        Returns the currently selected orbit.
+        """
+        idxr = self.ui.hsRadius.value()
+        idx1 = self.ui.hsParam1.value()
+        idx2 = self.ui.hsParam2.value()
+
+        idx  = (idx2 + self.orbits._n2*(idx1 + self.orbits._n1*idxr))
+        return self.orbits[idx]
+
+
     def hsRadiusChanged(self, v=None):
         idx = self.ui.hsRadius.value()
         self.ui.lblRadius.setText('{}'.format(self.orbits._radius[idx]))
@@ -102,6 +154,131 @@ class OrbitWindow(QtWidgets.QMainWindow):
         self.toggleEnabled(True)
 
 
+    def plotOrbit1D(self):
+        orb = self.getSelectedOrbit()
+        if orb is None: return
+
+        window = self.windows['Orbit1D'][0]
+        R, _ = orb.getRZ()
+        T    = orb.getTime()
+
+        self.plotQuantity(window, T, R, ylabel='$R$ (m)')
+
+
+    def plotOrbit2D(self):
+        orb = self.getSelectedOrbit()
+        if orb is None: return
+
+        R, Z = orb.getRZ()
+        window = self.windows['Orbit2D'][0]
+
+        self.plotQuantity(window, R, Z, xlabel='$R$ (m)', ylabel='$Z$ (m)', autolimits=False)
+
+        if orb.WALL is not None:
+            window.ax.plot(orb.WALL[0,:], orb.WALL[1,:], 'k-', linewidth=3)
+
+        if orb.SEPARATRIX is not None:
+            window.ax.plot(orb.SEPARATRIX[0,:], orb.SEPARATRIX[1,:], 'k--', linewidth=2)
+
+        window.ax.set_aspect('equal', 'box')
+
+
+    def plotPpar(self):
+        orb = self.getSelectedOrbit()
+        if orb is None: return
+
+        window = self.windows['Ppar'][0]
+        PPAR = orb.PPAR
+        T    = orb.getTime()
+
+        self.plotQuantity(window, T, PPAR, ylabel='$p_\parallel / mc$')
+
+        # Plot ppar = 0
+        window.h0, = window.ax.plot([T[0], T[-1]], [0, 0], 'k--', linewidth=1)
+
+
+    def plotPperp(self):
+        orb    = self.getSelectedOrbit()
+        if orb is None: return
+
+        window = self.windows['Pperp'][0]
+        PPERP  = orb.PPERP
+        T      = orb.getTime()
+
+        self.plotQuantity(window, T, PPERP, ylabel='$p_\perp / mc$')
+
+
+    def plotPitch(self):
+        orb    = self.getSelectedOrbit()
+        if orb is None: return
+
+        window = self.windows['Pitch'][0]
+        XI     = orb.XI
+        T      = orb.getTime()
+
+        self.plotQuantity(window, T, XI, ylabel=r'$\xi$')
+
+        # Plot ppar = 0
+        window.h0, = window.ax.plot([T[0], T[-1]], [0, 0], 'k--', linewidth=1)
+
+
+    def plotB(self):
+        orb    = self.getSelectedOrbit()
+        if orb is None: return
+
+        window = self.windows['B'][0]
+        B      = orb.Babs
+        T      = orb.getTime()
+
+        self.plotQuantity(window, T, B, ylabel='$|B|$ (T)')
+
+
+    def plotClassification(self):
+        window = self.spaceWindows['class']
+        self.plotSpace(window, self.orbits._radius, self.orbits._param1, self.orbits._param2, self.orbits.CLASSIFICATION)
+
+
+    def plotSpace(self, window, r, p1, p2, data, title=''):
+        # Check which parameters are worth visualizing...
+        params = []
+        paramsl = [r,p1,p2]
+
+        if r.size > 1: params.append(0)
+        if p1.size > 1: params.append(1)
+        if p2.size > 1: params.append(2)
+
+        if len(params) == 3:
+            if not window.isVisible():
+                window.show()
+        elif len(params) == 2:
+            pass
+        elif len(params) == 1:
+            pass
+        else:
+            return
+
+
+    def plotQuantity(self, window, x, y, xlabel='Time $t$ (s)', ylabel=None, autolimits=True):
+        window.ax = window.figure.add_subplot(111)
+
+        window.h, = window.ax.plot(x, y, linewidth=2)
+
+        if xlabel is not None:
+            window.ax.set_xlabel(xlabel)
+        if ylabel is not None:
+            window.ax.set_ylabel(ylabel)
+
+        if autolimits:
+            xmin, xmax = np.amin(x), np.amax(x)
+            ymin, ymax = np.amin(y), np.amax(y)
+
+            window.ax.set_xlim(xmin, xmax)
+            window.ax.set_ylim(ymin - 0.1*(ymax-ymin), ymax + 0.1*(ymax-ymin))
+
+        if not window.isVisible():
+            window.show()
+
+
     def toggleEnabled(self, enabled):
         self.ui.gbDetails.setEnabled(enabled)
         self.ui.hsRadius.setEnabled(enabled)
@@ -116,6 +293,10 @@ class OrbitWindow(QtWidgets.QMainWindow):
 
         self.ui.gbOrbit.setEnabled(enabled)
 
+        self.togglePlotBtnEnabled(enabled)
+
+
+    def togglePlotBtnEnabled(self, enabled):
         self.ui.btnPlotOrbit1D.setEnabled(enabled)
         self.ui.btnPlotOrbit2D.setEnabled(enabled)
         self.ui.btnPlotOrbit3D.setEnabled(enabled)
@@ -149,6 +330,12 @@ class OrbitWindow(QtWidgets.QMainWindow):
         self.hsParam1Changed()
         self.hsParam2Changed()
 
+        self.ui.lblRadialPoints.setText('{}'.format(self.orbits._nr))
+        self.ui.lblParam1Points.setText('{}'.format(self.orbits._n1))
+        self.ui.lblParam2Points.setText('{}'.format(self.orbits._n2))
+        self.ui.lblParam1Name.setText('{}:'.format(self.PARAMNAMES[self.orbits._param1name]))
+        self.ui.lblParam2Name.setText('{}:'.format(self.PARAMNAMES[self.orbits._param2name]))
+
         # Get file size
         fsize = os.path.getsize(self.ui.tbFileName.text())
         units = ['B', 'kiB', 'MiB', 'GiB', 'TiB', 'PiB']
@@ -161,20 +348,32 @@ class OrbitWindow(QtWidgets.QMainWindow):
 
 
     def updateOrbitDetails(self):
-        idxr = self.ui.hsRadius.value()
-        idx1 = self.ui.hsParam1.value()
-        idx2 = self.ui.hsParam2.value()
+        """
+        Set the labels in the 'Selected orbit' GroupBox.
+        """
+        orb = self.getSelectedOrbit()
 
-        idx  = (idxr + self.orbits._nr*(idx1 + self.orbits._n1*idx2))
+        if orb is None:
+            self.ui.lblClass.setText(self.CLASSNAMES[self.ORBIT_CLASS_DISCARDED])
+            self.ui.lblMinB.setText('N/A')
+            self.ui.lblMaxB.setText('N/A')
+            self.ui.lblTransitTime.setText('N/A')
 
-        orb = self.orbits[idx]
+            self.togglePlotBtnEnabled(False)
+            return
+        else:
+            self.togglePlotBtnEnabled(True)
 
         # Classification
-        self.ui.lblClass.setText(self.CLASSNAMES[orb.classification])
+        if orb.classification > 0 and orb.classification < len(self.CLASSNAMES):
+            self.ui.lblClass.setText(self.CLASSNAMES[orb.classification])
+        else:
+            self.ui.lblClass.setText(self.CLASSNAMES[0])
         # Min B
-        #self.ui.lblMinB.setText('{:.2f} T'.format(np.amin(orb.
+        self.ui.lblMinB.setText('{:.2f} T'.format(np.amin(orb.Babs)))
         # Max B
-        #
+        self.ui.lblMaxB.setText('{:.2f} T'.format(np.amax(orb.Babs)))
+
         # Transit time
         tt = orb.getTransitTime()
         ts = tt
@@ -182,7 +381,8 @@ class OrbitWindow(QtWidgets.QMainWindow):
         largeunits = ['s', 'minutes', 'hours']
         unit = 's'
 
-        if ts < 1:
+        if ts <= 0: pass
+        elif ts < 1:
             i = 0
             while ts < 1:
                 ts *= 1e3
@@ -199,5 +399,78 @@ class OrbitWindow(QtWidgets.QMainWindow):
                 unit = largeunits[1]
 
         self.ui.lblTransitTime.setText('{:.2f} {} ({:.3e} s)'.format(ts, unit, tt))
+
+        # Update open orbit plots
+        for _, w in self.windows.items():
+            if w[0].isVisible():
+                w[1]()
+
+    
+    def updatePlotOrbit1D(self):
+        orb = self.getSelectedOrbit()
+        R, _ = orb.getRZ()
+        T    = orb.getTime()
+        window = self.windows['Orbit1D'][0]
+
+        self.updatePlotQuantity(window, T, R)
+
+    def updatePlotOrbit2D(self):
+        orb = self.getSelectedOrbit()
+        R, Z = orb.getRZ()
+        window = self.windows['Orbit2D'][0]
+        self.updatePlotQuantity(window, R, Z, autolimits=False)
+
+    def updatePlotPpar(self):
+        orb = self.getSelectedOrbit()
+        PPAR = orb.PPAR
+        T    = orb.getTime()
+        window = self.windows['Ppar'][0]
+
+        window.h0.set_xdata([T[0], T[-1]])
+        self.updatePlotQuantity(window, T, PPAR)
+
+    def updatePlotPperp(self):
+        orb = self.getSelectedOrbit()
+        PPERP = orb.PPERP
+        T    = orb.getTime()
+        window = self.windows['Pperp'][0]
+
+        self.updatePlotQuantity(window, T, PPERP)
+
+    def updatePlotPitch(self):
+        orb  = self.getSelectedOrbit()
+        XI   = orb.XI
+        T    = orb.getTime()
+        window = self.windows['Pitch'][0]
+
+        window.h0.set_xdata([T[0], T[-1]])
+        self.updatePlotQuantity(window, T, XI)
+
+    def updatePlotB(self):
+        orb = self.getSelectedOrbit()
+        B   = orb.Babs
+        T   = orb.getTime()
+        window = self.windows['B'][0]
+
+        self.updatePlotQuantity(window, T, B)
+
+    def updatePlotTime(self):
+        pass
+
+    def updatePlotJ(self):
+        pass
+    
+    def updatePlotQuantity(self, window, x, y, autolimits=True):
+        window.h.set_xdata(x)
+        window.h.set_ydata(y)
+
+        if autolimits:
+            xmin, xmax = np.amin(x), np.amax(x)
+            ymin, ymax = np.amin(y), np.amax(y)
+
+            window.ax.set_xlim(xmin, xmax)
+            window.ax.set_ylim(ymin - 0.1*(ymax-ymin), ymax + 0.1*(ymax-ymin))
+
+        window.drawSafe()
 
 
