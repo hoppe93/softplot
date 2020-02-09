@@ -34,6 +34,8 @@ class PlotSliderWindow(QtWidgets.QFrame):
         self.slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.slider.setTickInterval(1)
 
+        self.slider.valueChanged.connect(self.sliderChanged)
+
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.toolbar)
         layout.addLayout(hl)
@@ -41,6 +43,7 @@ class PlotSliderWindow(QtWidgets.QFrame):
         layout.addWidget(self.canvas)
         self.setLayout(layout)
         self.resize(width,height)
+
 
     def drawSafe(self):
         try:
@@ -53,6 +56,52 @@ class PlotSliderWindow(QtWidgets.QFrame):
             msg.setStandardButtons(QMessageBox.Ok)
             msg.exec_()
 
-    def setData(self, p, x, y, z):
-        pass
+
+    def setData(self, p, x, y, z, paramName='Parameter', xlabel=None, ylabel=None, title=None):
+        if p is None or p.size == 1:
+            self.lblParamName.hide()
+            self.lblParamVal.hide()
+            self.slider.hide()
+        else:
+            self.lblParamName.setText(paramName)
+            self.lblParamVal.setText('{}'.format(p[0]))
+            self.slider.setMaximum(p.size-1)
+
+        self.param = p
+        self.x = x
+        self.y = y
+        self.z = z
+
+        if p is not None:
+            self.updatePlot(xlabel=xlabel, ylabel=ylabel, title=title)
+
+    
+    def sliderChanged(self):
+        i = self.slider.value()
+        self.lblParamVal.setText('{}'.format(self.param[i]))
+
+        self.updatePlot()
+
+
+    def updatePlot(self, xlabel=None, ylabel=None, title=None):
+        newAxis = (self.ax is None)
+        if newAxis:
+            self.ax = self.figure.add_subplot(111)
+
+        i = self.slider.value()
+        h = self.ax.contourf(self.x, self.y, self.z[i,:,:])
+
+        if newAxis:
+            self.figure.colorbar(h)
+
+        if xlabel is not None:
+            self.ax.set_xlabel(xlabel)
+        if ylabel is not None:
+            self.ax.set_ylabel(ylabel)
+        if title is not None:
+            self.ax.set_title(title)
+
+
+        self.drawSafe()
+
 

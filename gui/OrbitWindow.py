@@ -62,7 +62,10 @@ class OrbitWindow(QtWidgets.QMainWindow):
         self.windows['Jacobian'] = (PlotWindow(800, 500), self.updatePlotJ)
 
         self.spaceWindows = {}
-        self.spaceWindows['class'] = PlotSliderWindow(800, 500)
+        self.spaceWindows['class']   = PlotSliderWindow(800, 500)
+        self.spaceWindows['minB']    = PlotSliderWindow(800, 500)
+        self.spaceWindows['maxB']    = PlotSliderWindow(800, 500)
+        self.spaceWindows['transit'] = PlotSliderWindow(800, 500)
 
         self.toggleEnabled(False)
         self.bindEvents()
@@ -86,6 +89,9 @@ class OrbitWindow(QtWidgets.QMainWindow):
         self.ui.btnPlotB.clicked.connect(self.plotB)
 
         self.ui.btnShowClassification.clicked.connect(self.plotClassification)
+        self.ui.btnShowMinB.clicked.connect(self.plotMinBSpace)
+        self.ui.btnShowMaxB.clicked.connect(self.plotMaxBSpace)
+        self.ui.btnShowTransitTime.clicked.connect(self.plotTransitTimeSpace)
 
 
     def browseFile(self):
@@ -235,7 +241,22 @@ class OrbitWindow(QtWidgets.QMainWindow):
 
     def plotClassification(self):
         window = self.spaceWindows['class']
-        self.plotSpace(window, self.orbits._radius, self.orbits._param1, self.orbits._param2, self.orbits.CLASSIFICATION)
+        self.plotSpace(window, r=self.orbits._radius, p1=self.orbits._param1, p2=self.orbits._param2, data=self.orbits.CLASSIFICATION, title='Orbit classification')
+
+
+    def plotMinBSpace(self):
+        window = self.spaceWindows['minB']
+        self.plotSpace(window, r=self.orbits._radius, p1=self.orbits._param1, p2=self.orbits._param2, data=np.amin(self.orbits.BABS, axis=1), title='Minimum magnetic field')
+
+
+    def plotMaxBSpace(self):
+        window = self.spaceWindows['maxB']
+        self.plotSpace(window, r=self.orbits._radius, p1=self.orbits._param1, p2=self.orbits._param2, data=np.amax(self.orbits.BABS, axis=1), title='Maximum magnetic field')
+    
+
+    def plotTransitTimeSpace(self):
+        window = self.spaceWindows['transit']
+        self.plotSpace(window, r=self.orbits._radius, p1=self.orbits._param1, p2=self.orbits._param2, data=np.amax(self.orbits.T, axis=1), title='Transit time')
 
 
     def plotSpace(self, window, r, p1, p2, data, title=''):
@@ -247,11 +268,24 @@ class OrbitWindow(QtWidgets.QMainWindow):
         if p1.size > 1: params.append(1)
         if p2.size > 1: params.append(2)
 
+        if not window.isVisible():
+            window.show()
+
         if len(params) == 3:
-            if not window.isVisible():
-                window.show()
+            DATA = np.reshape(data, (r.size, p1.size, p2.size))
+            window.setData(r, x=p1, y=p2, z=DATA, paramName='Radius', title=title, xlabel=self.PARAMNAMES[self.orbits._param1name], ylabel=self.PARAMNAMES[self.orbits._param2name])
         elif len(params) == 2:
-            pass
+            DATA = np.reshape(data, (1, paramsl[0].size, paramsl[1].size))
+            xlabel, ylabel = None, None
+
+            if params[0] == 0: xlabel = 'Radius (m)'
+            elif params[0] == 1: xlabel = self.PARAMNAMES[self.orbits._param1name]
+            else: xlabel = self.PARAMNAMES[self.orbits._param2name]
+
+            if params[1] == 1: xlabel = self.PARAMNAMES[self.orbits._param1name]
+            else: xlabel = self.PARAMNAMES[self.orbits._param2name]
+
+            window.setData(r=np.array([0]), x=paramsl[params[0]], y=paramsl[params[1]], paramName='None', title=title, xlabel=xlabel, ylabel=ylabel)
         elif len(params) == 1:
             pass
         else:
