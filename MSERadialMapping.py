@@ -41,9 +41,17 @@ class MSERadialMapping:
         self.ntime  = 2000
 
 
-    def constructMapping(self, verbose=False):
+    def constructMapping(self, verbose=False, qtSignal=None):
         """
         Executes SOFT and constructs the radial mapping.
+
+        RETURNS
+        r:             SOFT radial coordinates.
+        sensitivities: Array containing the sensitivity of each
+                       MSE chord as a function of SOFT radius (i.e.
+                       flux surface).
+        radiusmap:     Array mapping each MSE chord to a SOFT radius
+                       (i.e. flux surface).
         """
         nc = self.geometry.nlos()
         radiusmap = np.zeros((nc,))
@@ -52,7 +60,7 @@ class MSERadialMapping:
         flipped = False
         r = None
 
-        for i in range(10, nc):
+        for i in range(0, nc):
             pi, outfile = self.__generatePi(i, prefix='mse')
 
             if verbose:
@@ -67,7 +75,11 @@ class MSERadialMapping:
             r -= np.amin(r)
             f = gf.FUNC
 
-            sensitivities[i] = f
+            fmax = np.amax(f)
+            if fmax != 0:
+                sensitivities[i] = f / fmax
+            else:
+                sensitivities[i] = f
 
             maxri = np.argmax(f)
             radiusmap[i] = r[maxri]
@@ -78,14 +90,16 @@ class MSERadialMapping:
             else:
                 prevri = maxri
 
-            if i == 11:
-                break
-
             os.remove(outfile)
+
+            if qtSignal is not None:
+                qtSignal.emit(i, r, sensitivities, radiusmap)
 
         self.r = r
         self.sensitivities = sensitivities
         self.radiusmap = radiusmap
+
+        return r, sensitivities, radiusmap
 
 
     def __generatePi(self, index, prefix='mse'):

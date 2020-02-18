@@ -77,9 +77,9 @@ class MagneticField:
 
         self.meshR, self.meshZ = np.meshgrid(self.r, self.z)
 
-        self.interpBphi = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Bphi, kind='cubic')
-        self.interpBr   = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Br, kind='cubic')
-        self.interpBz   = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Bz, kind='cubic')
+        self.interpBphi = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Bphi.T, kind='cubic')
+        self.interpBr   = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Br.T, kind='cubic')
+        self.interpBz   = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Bz.T, kind='cubic')
 
 
     def loadHDF5(self, filename):
@@ -95,11 +95,18 @@ class MagneticField:
                     return v[:].tostring().decode('utf-8')
 
         with h5py.File(filename, 'r') as f:
-            self.Bphi       = np.array(f['Bphi'][:,:])
-            self.Br         = np.array(f['Br'][:,:])
-            self.Bz         = np.array(f['Bz'][:,:])
-            self.r          = f['r'][:,:]
-            self.z          = f['z'][:,:]
+            self.Bphi       = np.array(f['Bphi'][:])
+            self.Br         = np.array(f['Br'][:])
+            self.Bz         = np.array(f['Bz'][:])
+            self.r          = f['r'][:]
+            self.z          = f['z'][:]
+
+            if self.Bphi.shape[0] != self.r.size and self.Bphi.shape[1] != self.z.size:
+                self.Bphi = self.Bphi.T
+            if self.Br.shape[0] != self.r.size and self.Br.shape[1] != self.z.size:
+                self.Br = self.Br.T
+            if self.Bz.shape[0] != self.r.size and self.Bz.shape[1] != self.z.size:
+                self.Bz = self.Bz.T
 
             self.description = tos(f['desc'])
             self.name        = tos(f['name'])
@@ -118,11 +125,11 @@ class MagneticField:
             try: self.verBz         = np.array(f['verBz'][:])
             except KeyError: pass
 
-            try: self.Psi        = f['Psi'][:,:]
+            try: self.Psi        = f['Psi'][:]
             except KeyError: pass
-            try: self.wall       = f['wall'][:,:]
+            try: self.wall       = f['wall'][:]
             except KeyError: pass
-            try: self.separatrix = f['separatrix'][:,:]
+            try: self.separatrix = f['separatrix'][:]
             except KeyError: pass
 
 

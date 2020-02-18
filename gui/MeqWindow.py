@@ -100,6 +100,7 @@ class MeqWindow(QtWidgets.QMainWindow):
             self.meqplot.loadDataFile(filename)
 
             self.ui.tbMeqFile.setText(filename)
+            self.sightlineMappingsWindow.setMagneticField(filename)
             self.filename = filename
 
             self.meqfileUpdated()

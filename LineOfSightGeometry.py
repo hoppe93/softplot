@@ -96,9 +96,11 @@ class LineOfSightGeometry:
         with h5py.File(filename, 'r') as f:
             self.position = f['position'][:]
             self.nhat = f['nhat'][:]
-            self.alpha = f['alpha'][:]
-            self.aperture = f['aperture'][:]
+            self.alpha = f['alpha'][:][0]
+            self.aperture = f['aperture'][:][0]
             self.spectrum = f['spectrum'][:]
+
+            self.spectrum = (np.amin(self.spectrum), np.amax(self.spectrum), self.spectrum.size)
 
 
     def save(self, filename):
@@ -110,8 +112,10 @@ class LineOfSightGeometry:
         with h5py.File(filename, 'w') as f:
             f.create_dataset('position', self.position.shape, data=self.position)
             f.create_dataset('nhat', self.nhat.shape, data=self.nhat)
-            f.create_dataset('alpha', self.alpha.shape, data=self.alpha)
-            f.create_dataset('aperture', self.aperture.shape, data=self.aperture)
-            f.create_dataset('spectrum', self.spectrum.shape, data=self.spectrum)
+            f.create_dataset('alpha', (1,), data=self.alpha)
+            f.create_dataset('aperture', (1,), data=self.aperture)
+            
+            srange = np.linspace(self.spectrum[0], self.spectrum[1], self.spectrum[2])
+            f.create_dataset('spectrum', srange.shape, data=srange)
 
 
