@@ -1,6 +1,7 @@
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QMessageBox
+import numpy as np
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -15,6 +16,7 @@ class PlotSliderWindow(QtWidgets.QFrame):
         self.toolbar = NavigationToolbar(self.canvas, self)
         self.ax = None
         self.setWindowTitle('Plot window')
+        self.cbar = None
 
         hl = QtWidgets.QHBoxLayout()
         self.lblParamName = QtWidgets.QLabel(self)
@@ -89,10 +91,21 @@ class PlotSliderWindow(QtWidgets.QFrame):
             self.ax = self.figure.add_subplot(111)
 
         i = self.slider.value()
-        h = self.ax.contourf(self.x, self.y, self.z[i,:,:])
+        vmin = 0
+        vmax = np.amax(self.z[i,:,:])
+        h = self.ax.contourf(self.x, self.y, self.z[i,:,:].T, vmin=0, vmax=vmax)
 
         if newAxis:
-            self.figure.colorbar(h)
+            self.cbar = self.figure.colorbar(h)
+        else:
+            self.cbar.ax.clear()
+            self.cbar = self.figure.colorbar(h, cax=self.cbar.ax)
+            """
+            self.cbar.set_clim(vmin, vmax)
+            self.cbar.set_ticks(np.linspace(vmin, vmax, num=11, endpoint=True))
+            self.cbar.draw_all()
+            #self.cbar.ax.autoscale_view()
+            """
 
         if xlabel is not None:
             self.ax.set_xlabel(xlabel)

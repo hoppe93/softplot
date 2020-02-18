@@ -3,7 +3,7 @@ import numpy as np
 
 class Orbit:
     
-    def __init__(self, nt, t, xyz, p, solution, ppar, pperp, p2, B, Babs, bhat, classification, wall=None, separatrix=None):
+    def __init__(self, nt, t, xyz, p, solution, ppar, pperp, p2, B, Babs, bhat, Jdtdrho, classification, wall=None, separatrix=None):
         self.NT  = nt
         self.T   = t
         self.XYZ = np.reshape(xyz, (nt, 3))
@@ -16,6 +16,7 @@ class Orbit:
         self.B     = B
         self.Babs  = Babs
         self.Bhat  = bhat
+        self.Jdtdrho = Jdtdrho
 
         self.XI    = ppar / np.sqrt(p2)
 

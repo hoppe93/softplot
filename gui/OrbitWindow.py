@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QFileDialog
 from ui import orbits_design
 import numpy as np
 import os
+import time
 
 from PlotWindow import PlotWindow
 from PlotSliderWindow import PlotSliderWindow
@@ -66,6 +67,7 @@ class OrbitWindow(QtWidgets.QMainWindow):
         self.spaceWindows['minB']    = PlotSliderWindow(800, 500)
         self.spaceWindows['maxB']    = PlotSliderWindow(800, 500)
         self.spaceWindows['transit'] = PlotSliderWindow(800, 500)
+        self.spaceWindows['Jacobian'] = PlotSliderWindow(800, 500)
 
         self.toggleEnabled(False)
         self.bindEvents()
@@ -87,11 +89,13 @@ class OrbitWindow(QtWidgets.QMainWindow):
         self.ui.btnPlotPperp.clicked.connect(self.plotPperp)
         self.ui.btnPlotPitch.clicked.connect(self.plotPitch)
         self.ui.btnPlotB.clicked.connect(self.plotB)
+        self.ui.btnPlotJ.clicked.connect(self.plotJacobian)
 
         self.ui.btnShowClassification.clicked.connect(self.plotClassification)
         self.ui.btnShowMinB.clicked.connect(self.plotMinBSpace)
         self.ui.btnShowMaxB.clicked.connect(self.plotMaxBSpace)
         self.ui.btnShowTransitTime.clicked.connect(self.plotTransitTimeSpace)
+        self.ui.btnShowJacobian.clicked.connect(self.plotJacobianSpace)
 
 
     def browseFile(self):
@@ -114,6 +118,10 @@ class OrbitWindow(QtWidgets.QMainWindow):
         for _, w in self.windows.items():
             if w[0].isVisible():
                 w[0].close()
+
+        for _, w in self.spaceWindows.items():
+            if w.isVisible():
+                w.close()
 
         self.close()
 
@@ -239,6 +247,17 @@ class OrbitWindow(QtWidgets.QMainWindow):
         self.plotQuantity(window, T, B, ylabel='$|B|$ (T)')
 
 
+    def plotJacobian(self):
+        orb    = self.getSelectedOrbit()
+        if orb is None: return
+
+        window = self.windows['Jacobian'][0]
+        J      = orb.Jdtdrho
+        T      = orb.getTime()
+
+        self.plotQuantity(window, T, J, ylabel=r'$J\,\mathrm{d}\tau\mathrm{d}\rho$')
+
+
     def plotClassification(self):
         window = self.spaceWindows['class']
         self.plotSpace(window, r=self.orbits._radius, p1=self.orbits._param1, p2=self.orbits._param2, data=self.orbits.CLASSIFICATION, title='Orbit classification')
@@ -257,6 +276,11 @@ class OrbitWindow(QtWidgets.QMainWindow):
     def plotTransitTimeSpace(self):
         window = self.spaceWindows['transit']
         self.plotSpace(window, r=self.orbits._radius, p1=self.orbits._param1, p2=self.orbits._param2, data=np.amax(self.orbits.T, axis=1), title='Transit time')
+
+    
+    def plotJacobianSpace(self):
+        window = self.spaceWindows['Jacobian']
+        self.plotSpace(window, r=self.orbits._radius, p1=self.orbits._param1, p2=self.orbits._param2, data=np.amax(self.orbits.JACOBIAN, axis=1), title='Maximum Jacobian')
 
 
     def plotSpace(self, window, r, p1, p2, data, title=''):
@@ -338,8 +362,15 @@ class OrbitWindow(QtWidgets.QMainWindow):
         self.ui.btnPlotPperp.setEnabled(enabled)
         self.ui.btnPlotPitch.setEnabled(enabled)
         self.ui.btnPlotB.setEnabled(enabled)
-        self.ui.btnPlotTime.setEnabled(enabled)
-        self.ui.btnPlotJ.setEnabled(enabled)
+
+        self.ui.btnPlotTime.setEnabled(False)
+        
+        if self.orbits is not None and self.orbits.JACOBIAN is not None:
+            self.ui.btnPlotJ.setEnabled(enabled)
+            self.ui.btnShowJacobian.setEnabled(enabled)
+        else:
+            self.ui.btnPlotJ.setEnabled(False)
+            self.ui.btnShowJacobian.setEnabled(False)
 
     
     def updateDetails(self):
@@ -492,7 +523,12 @@ class OrbitWindow(QtWidgets.QMainWindow):
         pass
 
     def updatePlotJ(self):
-        pass
+        orb = self.getSelectedOrbit()
+        J   = orb.Jdtdrho
+        T   = orb.getTime()
+        window = self.windows['Jacobian'][0]
+
+        self.updatePlotQuantity(window, T, J)
     
     def updatePlotQuantity(self, window, x, y, autolimits=True):
         window.h.set_xdata(x)

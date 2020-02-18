@@ -19,6 +19,7 @@ class Orbits:
         self.XYZ      = None
         self.Z        = None
         self.CLASSIFICATION = None
+        self.JACOBIAN = None
 
         self.B = None
         self.BABS = None
@@ -74,6 +75,9 @@ class Orbits:
             try: self.SEPARATRIX    = f['separatrix'][:]
             except: self.SEPARATRIX = None
 
+            try: self.JACOBIAN = f['Jdtdrho'][:]
+            except: self.JACOBIAN = None
+
             try:
                 self._radius     = f['r'][:]
                 self._param1name = tos(f['param1name'][:])
@@ -95,7 +99,9 @@ class Orbits:
 
         for i in range(0, self.NORBITS):
             if self.CLASSIFICATION[i] != self.CLASS_DISCARDED:
-                self.ORBITS.append(Orbit(self.NT, self.T[i,:], self.XYZ[i,:], self.P[i,:], self.SOLUTION[i,:], self.PPAR[i,:], self.PPERP[i,:], self.P2[i,:], self.B[i,:], self.BABS[i,:], self.BHAT[i,:], self.CLASSIFICATION[i], wall=self.WALL))
+                Jdtdrho = None if self.JACOBIAN is None else self.JACOBIAN[i,:]
+
+                self.ORBITS.append(Orbit(self.NT, self.T[i,:], self.XYZ[i,:], self.P[i,:], self.SOLUTION[i,:], self.PPAR[i,:], self.PPERP[i,:], self.P2[i,:], self.B[i,:], self.BABS[i,:], self.BHAT[i,:], Jdtdrho, self.CLASSIFICATION[i], wall=self.WALL))
             else:
                 self.ORBITS.append(None)
 
