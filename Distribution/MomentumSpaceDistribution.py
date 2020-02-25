@@ -11,7 +11,7 @@ class MomentumSpaceDistribution(DistributionFunction):
         self.nr = 1
 
 
-    def eval(self, r, P, XI):
+    def eval(self, r, P=None, XI=None):
         """
         Evaluate the distribution function at the given radius,
         on the given P/XI grid.
