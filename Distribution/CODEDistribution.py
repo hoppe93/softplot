@@ -90,7 +90,7 @@ class CODEDistribution(MomentumSpaceDistribution):
         """
         fp = self._codef[1,:]
         c  = 299792458.0
-        e  = 1.602e-19
+        e  = 1.60217662e-19
 
         if p is None:
             v = e*c*self._codeP / np.sqrt(self._codeP**2 + 1)
@@ -108,15 +108,23 @@ class CODEDistribution(MomentumSpaceDistribution):
 
 
     def getNormalizationFactor(self):
-        me = 9.10938356e-31
-        eV2K = 1.602e-19
-        norm_div = 2*np.pi*me*(eV2K*self._TRef)
-        fac = self._nRef / (np.sqrt(norm_div) * norm_div)
+        me  = 9.10938356e-31
+        mc2 = 510.99895000e3    # in keV
+        c   = 299792458.0
+        #eV2K = 1.602e-19
+        #norm_div = 2*np.pi*me*(eV2K*self._TRef)
+
+        ve = c*np.sqrt(2*self._TRef / mc2)
+        #fac = self._nRef / (np.sqrt(np.pi) * me * ve)**3
+        fac = self._nRef / (3*np.sqrt(np.pi)**3 * me**3 * ve**3)
+
+        #norm_div = np.pi*me*2*ve**2
+        #fac = self._nRef / (np.sqrt(norm_div) * norm_div)
 
         return fac
 
 
-    def load(self, filename, path=''):
+    def load(self, filename, path='', timeindex=-1):
         """
         Load the CODE distribution function that is
         stored in the file with the given name.
@@ -125,15 +133,15 @@ class CODEDistribution(MomentumSpaceDistribution):
                   function from.
         """
         with h5py.File(filename, 'r') as f:
-            self._load_internal(f, path)
+            self._load_internal(f, path, timeindex)
     
 
-    def _load_internal(self, f, path=''):
+    def _load_internal(self, f, path='', timeindex=-1):
         """
         Load the CODE distribution function pointed to
         by the h5py file handle 'f'.
         """
-        codef   = f[path+'/f'][:]
+        codef   = f[path+'/f'][timeindex,:]
         Nxi = int(f[path+'/Nxi'][:])
 
         def formatScalar(s):

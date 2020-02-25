@@ -351,7 +351,7 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
         else:
             raise ValueError("Internal error: Unable to determine the number of radial points in distribution.")
 
-        if nmom is not None: self.ui.lblNMomentum.setText(str(self.distfunc.getNmom()))
+        if nmom is not None: self.ui.lblNMomentum.setText(str(self.distfunc.getNmomentum()))
         else: self.ui.lblNMomentum.setText('[Several]')
 
         if self.maxP is not None: self.ui.lblMaxP.setText(str(self.maxP)+'mc')
