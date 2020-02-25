@@ -9,6 +9,7 @@ from PlotWindow import PlotWindow
 from DistributionFunctionAnalysePitch import DistributionFunctionAnalysePitch
 import time
 import Bekefi
+import traceback
 
 from Distribution.CODEDistribution import CODEDistribution
 from Distribution.DistributionFunction import DistributionFunction
@@ -24,10 +25,6 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
         self.ui = distfunc_design.Ui_DistfuncUI()
         self.ui.setupUi(self)
 
-        if len(argv) != 1:
-            raise Exception("The distribution function must be specified at startup.")
-
-        self.filename = argv[0]
         self.plotWindow = PlotWindow(width=800, height=600)
         self.ax = None
         self.radialAx = None
@@ -47,10 +44,51 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
 
         self.generateLineStyles()
 
-        self.loadDistribution(self.filename)
+        self.filename, self.disttype = self.parseCmdArgs(argv)
+
+        self.loadDistribution(self.filename, typehint=self.disttype)
         self.setupFigure()
         
         self.bindEvents()
+
+
+    def parseCmdArgs(self, argv):
+        """
+        Parse the command-line arguments that were passed to
+        this program.
+
+        argv: List of command-line arguments.
+        """
+        if len(argv) == 0:
+            raise Exception("At least the name of the distribution function to load must be specified on startup.")
+
+        filename = None
+        typehint = None
+
+        def getarg(argv, i):
+            i += 1
+            if i >= len(argv):
+                raise Exception("Expected argument after '--type'.")
+            else:
+                return argv[i], i
+
+        i = 0
+        L = len(argv)
+        while i < L:
+            if argv[i].startswith('--'):
+                if argv[i] == '--type':
+                    typehint, i = getarg(argv, i)
+                else:
+                    raise Exception("Unrecognized command-line argument: '{}'.".format(argv[i]))
+            else:
+                if filename is None:
+                    filename = argv[i]
+                else:
+                    raise Exception("Multiple input files specified on command-line.")
+
+            i += 1
+
+        return filename, typehint
 
 
     def analysePitchDistribution(self):
@@ -237,7 +275,7 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
         self.plotSelection()
 
 
-    def loadDistribution(self, filename):
+    def loadDistribution(self, filename, typehint=None):
         """
         Load the named distribution function.
 
@@ -252,6 +290,13 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
             self.loadSOFTDistribution
         ]
 
+        if typehint is not None:
+            if typehint.lower() == 'code': flist = [self.loadCODEDistribution]
+            elif typehint.lower() == 'gocode': flist = [self.loadGOCODEDistribution]
+            elif typehint.lower() == 'soft': flist = [self.loadSOFTDistribution]
+            else:
+                print("WARNING: Unrecognized distribution function type '{}' specified. Ignoring...".format(typehint))
+
         found = False
         for f in flist:
             try:
@@ -259,13 +304,16 @@ class DistributionFunctionUI(QtWidgets.QMainWindow):
                 found = True
                 break
             except Exception as ex:
-                pass
+                if typehint is not None:
+                    print(ex)
+                    traceback.print_exc()
 
         if not found:
             QMessageBox.critical(self,
                 'Unrecognized type',
                 "The specified file is either corrupt or not a SOFT compatible distribution function.")
             self.exit()
+            return
 
         self.loadDistributionUI()
 
