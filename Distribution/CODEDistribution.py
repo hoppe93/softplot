@@ -82,7 +82,7 @@ class CODEDistribution(MomentumSpaceDistribution):
             return p, np.interp(p, self._codeP, fp)
 
 
-    def getCurrentDensity(self, r, p=None):
+    def getCurrentDensity(self, r, p=None, cumulative=False):
         """
         Returns the current density of the distribution function.
         This is the e*vpar moment of f, corresponding to the first
@@ -100,7 +100,7 @@ class CODEDistribution(MomentumSpaceDistribution):
             return p, np.interp(p, self._codeP, fp) * v
 
 
-    def getMomentum(self):
+    def getMomentum(self, r):
         """
         Returns the 'default' momentum grid.
         """
