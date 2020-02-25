@@ -135,6 +135,16 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="btnViewMapping">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string>View radial mapping</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="btnPlotXS">
           <property name="enabled">
            <bool>false</bool>

@@ -15,6 +15,7 @@ from matplotlib.figure import Figure
 
 from LineOfSightGeometry import LineOfSightGeometry
 from MSERadialMapping import MSERadialMapping
+from SightlineMappingsView import SightlineMappingsView
 
 class SightlineMappingsWindow(QtWidgets.QFrame):
 
@@ -31,6 +32,7 @@ class SightlineMappingsWindow(QtWidgets.QFrame):
         self.runningCalculation = False
         self.magneticField = magneticField
         self.calcThread = None
+        self.result = None
 
         self.figure = Figure(tight_layout=True)
         self.canvas = FigureCanvas(self.figure)
@@ -47,6 +49,7 @@ class SightlineMappingsWindow(QtWidgets.QFrame):
     def bindEvents(self):
         self.ui.btnBrowse.clicked.connect(self.openGeometryFile)
         self.ui.btnCalc.clicked.connect(self.startCalculateRadii)
+        self.ui.btnViewMapping.clicked.connect(self.viewMapping)
 
         self.mappingFinished.connect(self.finishSimulation)
         self.simulationError.connect(self.reportError)
@@ -131,7 +134,8 @@ class SightlineMappingsWindow(QtWidgets.QFrame):
         self.ui.btnClose.setEnabled(False)
         self.toggleEnabled(False)
 
-        self.ax = self.figure.add_subplot(111)
+        if self.ax is None:
+            self.ax = self.figure.add_subplot(111)
 
         self.ui.lblCalcStatus.setText('Calculating radial map...')
 
@@ -168,7 +172,20 @@ class SightlineMappingsWindow(QtWidgets.QFrame):
         self.ui.progressBar.setValue(index+1)
 
         self.ax.plot(softRadii, sensitivities[index])
+        self.ax.set_xlim([0, np.amax(softRadii)])
+        self.ax.set_ylim([0, 1.1])
+        self.ax.set_xlabel('$r\ \mathrm{(m)}$')
+        self.ax.set_ylabel('$\mathrm{Normalized intensity}$')
+
         self.drawSafe()
+
+
+    def viewMapping(self):
+        if self.result is None:
+            return
+
+        self.slmv = SightlineMappingsView(self.result['radiusmap'])
+        self.slmv.show()
 
 
     def reportError(self, ex):

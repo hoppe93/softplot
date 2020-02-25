@@ -93,8 +93,9 @@ class PhaseSpaceDistribution(DistributionFunction):
         i = bisect(self._radii, r)
 
         # Exact match?
-        if i < len(self._radii) and r == self._radii[i]:
-            return self._distributions[i].eval_mom(p, 0)
+        #if i < len(self._radii) and r == self._radii[i]:
+        if i > 0 and r == self._radii[i-1]:
+            return p, self._distributions[i-1].eval_mom(p, 0)
 
         r0, r1 = 0, 0
         f0, f1 = 0, 0
@@ -138,8 +139,9 @@ class PhaseSpaceDistribution(DistributionFunction):
         i = bisect(self._radii, r)
 
         # Exact match?
-        if i < len(self._radii) and r == self._radii[i]:
-            return self._distributions[i].eval_mom(p, 0)
+        #if i < len(self._radii) and r == self._radii[i]:
+        if i > 0 and r == self._radii[i-1]:
+            return self._distributions[i-1].getCurrentDensity(r, p)
 
         r0, r1 = 0, 0
         f0, f1 = 0, 0
@@ -148,21 +150,21 @@ class PhaseSpaceDistribution(DistributionFunction):
             r1 = self._radii[0]
             r2 = self._radii[1]
 
-            p, f1 = self._distributions[0].getCurrentDensity(0, p)
-            _, f2 = self._distributions[1].getCurrentDensity(0, p)
+            p, f1 = self._distributions[0].getCurrentDensity(r1, p)
+            _, f2 = self._distributions[1].getCurrentDensity(r2, p)
             f0 = (r2*f1 - r1*f2) / (r2-r1)
         elif i == len(self._radii):     # r is outside grid => extrapolate
             r0 = self._radii[i-1]
             r1 = r0 + (2*r0 - self._radii[i-2])
 
-            p, f0 = self._distributions[i-1].getCurrentDensity(0, p)
-            _, f1 = 2*f0 - self._distributions[i-2].getCurrentDensity(0, p)
+            p, f0 = self._distributions[i-1].getCurrentDensity(r0, p)
+            _, f1 = 2*f0 - self._distributions[i-2].getCurrentDensity(r1, p)
         else:
             r0 = self._radii[i-1]
             r1 = self._radii[i]
 
-            p, f0 = self._distributions[i-1].getCurrentDensity(0, p)
-            _, f1 = self._distributions[i].getCurrentDensity(0, p)
+            p, f0 = self._distributions[i-1].getCurrentDensity(r0, p)
+            _, f1 = self._distributions[i].getCurrentDensity(r1, p)
 
         return p, ((r1-r)*f0 + (r-r0)*f1) / (r1-r0)
 
@@ -195,7 +197,7 @@ class PhaseSpaceDistribution(DistributionFunction):
                     i.e. j(p), where j(p0) is the current density carried
                     by particles with momentum p <= p0.
         """
-        mc = 9.109e-31 * 299792458.0
+        mc = 9.10938356e-31 * 299792458.0
 
         if r is None:
             r = np.copy(self._radii)
