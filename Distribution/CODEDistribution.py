@@ -18,6 +18,8 @@ class CODEDistribution(MomentumSpaceDistribution):
         """
         super().__init__()
 
+        self.DEFAULTNXI = 150
+
         self._codef   = None
         self._codeP   = None
         self._codeNp  = 0
@@ -59,7 +61,7 @@ class CODEDistribution(MomentumSpaceDistribution):
         If P or XI is None, the corresponding default grid is used (i.e.
         the one on which the distribution function is defined).
         """
-        nxi = 150
+        nxi = self.DEFAULTNXI
         if P is None and XI is None:
             P, XI = np.meshgrid(self._codeP, np.linspace(-1, 1, nxi))
         elif P is None:

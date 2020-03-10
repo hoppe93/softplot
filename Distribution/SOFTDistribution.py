@@ -30,6 +30,8 @@ class SOFTDistribution(PhaseSpaceDistribution):
         def tos(v):
             if v.dtype == 'O':
                 return v[:][0]
+            elif v.dtype == 'uint16':
+                return v[:].tostring().decode('utf-16')
             else:
                 return v[:].tostring().decode('utf-8')
 

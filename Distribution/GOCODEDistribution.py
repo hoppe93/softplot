@@ -29,6 +29,8 @@ class GOCODEDistribution(PhaseSpaceDistribution):
         def tos(v):
             if v.dtype == 'O':
                 return v[:][0]
+            elif v.dtype == 'uint16':
+                return v[:].tostring().decode('utf-16')
             else:
                 return v[:].tostring().decode('utf-8')
 
@@ -38,7 +40,7 @@ class GOCODEDistribution(PhaseSpaceDistribution):
                 dtype = tos(f['type'][:])
 
                 if dtype != self.MAGIC:
-                    raise Exception("The given file is not a GO+CODE distribution function.")
+                    raise Exception("'{}': The given file is not a GO+CODE distribution function. Type: '{}'.".format(filename, dtype))
 
             nt = int(f[path+'/nt'][:][0])
 
@@ -46,7 +48,7 @@ class GOCODEDistribution(PhaseSpaceDistribution):
                 it = nt+it
 
             if it < 0 or it >= nt:
-                raise IndexError("Time step index out-of-range: {}. Number of time steps: {}".format(it, nt))
+                raise IndexError("'{}': Time step index out-of-range: {}. Number of time steps: {}".format(filename, it, nt))
             
             r = f[path+'/r'][:]
             self._loadDist(f['/t{}'.format(it)], r)

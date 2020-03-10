@@ -95,7 +95,7 @@ class PhaseSpaceDistribution(DistributionFunction):
         # Exact match?
         #if i < len(self._radii) and r == self._radii[i]:
         if i > 0 and r == self._radii[i-1]:
-            return p, self._distributions[i-1].eval_mom(p, 0)
+            return self._distributions[i-1].getAngleAveragedDistribution(0, p)
 
         r0, r1 = 0, 0
         f0, f1 = 0, 0
