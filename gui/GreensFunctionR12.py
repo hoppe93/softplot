@@ -9,6 +9,20 @@ from PlotWindow import PlotWindow
 
 from Green import Green
 
+
+def calcpolangle(f):
+    ang = 0.5 * np.arctan2(f[2], f[1]) * 180 / np.pi
+    f[np.where(f < -45)] += 180
+    fmin, fmax = -45, 135
+    return ang, fmin, fmax
+
+def calcpolfrac(f):
+    fr = np.sqrt(f[1]**2 + f[2]**2) / f[0]
+    fr[np.where(np.isnan(fr))] = 0
+    fmin, fmax = 0, 1
+
+    return fr, fmin, fmax
+
 class GreensFunctionR12(QtWidgets.QMainWindow):
     
     labels = {
@@ -19,6 +33,18 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
         'thetap': r'$\theta_{\rm p}$ (rad)',
         'ithetap': r'$\theta_{\rm p}$ (rad)',
         'xi': r'$\xi$'
+    }
+
+    poltypes = {
+        'Intensity': lambda f : (f[0], 0, 1),
+        'Horizontal polarization': lambda f : (0.5*(f[0] + f[1]), 0, 1),
+        'Vertical polarization': lambda f : (0.5*(f[0] - f[1]), 0, 1),
+        'Polarization angle': calcpolangle,
+        'Polarization fraction': calcpolfrac,
+        'Stokes I': lambda f : (f[0], 0, 1),
+        'Stokes Q': lambda f : (f[1], -1, 1),
+        'Stokes U': lambda f : (f[2], -1, 1),
+        'Stokes V': lambda f : (f[3], -1, 1)
     }
 
     
@@ -37,6 +63,11 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
         self.ax = None
         self.radialAx = None
         self.colorbar = None
+
+        self.hasStokesParameters = False
+
+        for key in self.poltypes:
+            self.ui.cbRadiationType.addItem(key)
 
         self.loadGreensFunction(self.filename)
         self.setupFigure()
@@ -57,6 +88,7 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
     def bindEvents(self):
         self.ui.rbSingleR.toggled.connect(self.toggleSingleSum)
         self.ui.sliderRadius.valueChanged.connect(self.sliderRadiusChanged)
+        self.ui.cbRadiationType.currentTextChanged.connect(self.cbRadiationTypeChanged)
 
         self.ui.btnMark.clicked.connect(self.markSuperParticle)
         self.ui.btnPlotRadialProfile.clicked.connect(self.plotRadialProfile)
@@ -65,24 +97,37 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
     
     def getGF(self):
         F = None
+
+        FUNC = self.gf.FUNC
+        fmin, fmax = 0, 1
+        if self.hasStokesParameters:
+            FUNC, fmin, fmax = self.getPolFunction()
+
         if self.format == '12':
-            F  = np.copy(self.gf.FUNC).T
-            mx = np.amax(F)
+            F  = np.copy(FUNC).T
+            mx = np.amax(np.abs(F))
             if mx != 0: F /= mx
         elif self.ui.rbSingleR.isChecked():
             idx = self.ui.sliderRadius.value()
-            F   = np.copy(self.gf.FUNC[idx]).T
-            mx  = np.amax(F)
+            F   = np.copy(FUNC[idx]).T
+            mx  = np.amax(np.abs(F))
             if mx != 0: F  /= mx
         else:
-            F = np.sum(self.gf.FUNC, axis=0).T
-            mx = np.amax(F)
+            F = np.sum(FUNC, axis=0).T
+            mx = np.amax(np.abs(F))
             if mx != 0: F /= mx
 
         # Locate super particle
         self.getSuperParticle(F)
 
-        return F
+        return F, fmin, fmax
+
+
+    def getPolFunction(self):
+        tp = self.ui.cbRadiationType.currentText()
+
+        fun = self.poltypes[tp]
+        return fun(self.gf.FUNC)
 
 
     def getSuperParticle(self, F):
@@ -105,10 +150,12 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
         if fmt == '12':
             self.ui.rbSingleR.setEnabled(False)
         elif fmt != 'r12':
-            raise Exception("The Green's function has an invalid format: '{}'. Expected '12' or 'r12'.".format(fmt))
+            raise Exception("The Green's function has an invalid format: '{}'. Expected '(s)12' or '(s)r12'.".format(fmt))
 
         self.format = fmt
-        
+        self.hasStokesParameters = self.gf.stokesparams
+        self.ui.cbRadiationType.setEnabled(self.gf.stokesparams)
+
         self.ui.sliderRadius.setMaximum(self.gf.nr-1)
         self.ui.sliderRadius.setTickInterval(max(1, int(np.round(self.gf.nr / 20))))
 
@@ -119,7 +166,7 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
 
 
     def markSuperParticle(self):
-        F = self.getGF()
+        F, _, _ = self.getGF()
         m1, m2, _, _ = self.getSuperParticle(F)
         self.ax.plot(m1, m2, 'x', color=(0, 1, 0), markersize=10, markeredgewidth=3)
         self.plotWindow.drawSafe()
@@ -147,15 +194,21 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
 
 
     def redrawFigure(self):
-        F = self.getGF()
-        r = np.linspace(0, 1, 20)
+        F, fmin, fmax = self.getGF()
+        r = np.linspace(fmin, fmax, 20)
         self.ax.clear()
-        cntr = self.ax.contourf(self.gf._param1, self.gf._param2, F, levels=r, cmap='GeriMap', vmin=0, vmax=1)
+
+        cmap = 'GeriMap'
+        if fmin < 0:
+            cmap = 'RdBu'
+
+        cntr = self.ax.contourf(self.gf._param1, self.gf._param2, F, levels=r, cmap=cmap, vmin=fmin, vmax=fmax)
 
         if self.colorbar is None:
             self.colorbar = self.plotWindow.figure.colorbar(cntr)
         else:
-            self.colorbar.update_normal(cntr)
+            self.colorbar.ax.clear()
+            self.colorbar = self.plotWindow.figure.colorbar(cntr, cax=self.colorbar.ax)
 
         self.ax.set_xlabel(self.labels[self.gf._param1name])
         self.ax.set_ylabel(self.labels[self.gf._param2name])
@@ -179,6 +232,10 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
         self.redrawFigure()
 
     
+    def cbRadiationTypeChanged(self):
+        self.redrawFigure()
+
+
     def sliderRadiusChanged(self):
         idx = self.ui.sliderRadius.value()
         self.ui.lblRIndex.setText(str(idx))

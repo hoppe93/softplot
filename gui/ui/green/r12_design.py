@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'ui/green/r12.ui'
 #
-# Created by: PyQt5 UI code generator 5.13.2
+# Created by: PyQt5 UI code generator 5.14.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -18,6 +18,10 @@ class Ui_R12(object):
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.cbRadiationType = QtWidgets.QComboBox(self.centralwidget)
+        self.cbRadiationType.setEnabled(False)
+        self.cbRadiationType.setObjectName("cbRadiationType")
+        self.verticalLayout.addWidget(self.cbRadiationType)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.rbSumR = QtWidgets.QRadioButton(self.centralwidget)
