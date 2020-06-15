@@ -14,6 +14,8 @@ def evaluateExpression(expr, x, lcls=None):
     iTHETA = lambda a : where(x < a, zeros(x.shape), ones(x.shape))
 
     lcls['x'] = x
+    lcls['THETA'] = THETA
+    lcls['iTHETA'] = iTHETA
     f = None
     if lcls is not None:
         f = eval(expr, globals(), lcls)
