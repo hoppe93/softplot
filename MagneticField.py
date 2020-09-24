@@ -75,7 +75,7 @@ class MagneticField:
         else:
             raise Exception("Unrecognized file format: {0}.".format(filename))
 
-        self.meshR, self.meshZ = np.meshgrid(self.r, self.z)
+        self.meshZ, self.meshR = np.meshgrid(self.z, self.r)
 
         self.interpBphi = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Bphi.T, kind='cubic')
         self.interpBr   = scipy.interpolate.interp2d(x=self.r, y=self.z, z=self.Br.T, kind='cubic')
