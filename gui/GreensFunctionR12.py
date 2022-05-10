@@ -88,6 +88,7 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
     def bindEvents(self):
         self.ui.rbSingleR.toggled.connect(self.toggleSingleSum)
         self.ui.sliderRadius.valueChanged.connect(self.sliderRadiusChanged)
+        self.ui.sliderWavelength.valueChanged.connect(self.sliderWavelengthChanged)
         self.ui.cbRadiationType.currentTextChanged.connect(self.cbRadiationTypeChanged)
 
         self.ui.btnMark.clicked.connect(self.markSuperParticle)
@@ -99,11 +100,15 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
         F = None
 
         FUNC = self.gf.FUNC
+        if self.format[0] == 'w':
+            idx = self.ui.sliderWavelength.value()
+            FUNC = FUNC[idx,:]
+
         fmin, fmax = 0, 1
         if self.hasStokesParameters:
             FUNC, fmin, fmax = self.getPolFunction()
 
-        if self.format == '12':
+        if self.format in ['12', 'w12']:
             F  = np.copy(FUNC).T
             mx = np.amax(np.abs(F))
             if mx != 0: F /= mx
@@ -149,7 +154,7 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
         fmt = self.gf.getFormat()
         if fmt == '12':
             self.ui.rbSingleR.setEnabled(False)
-        elif fmt != 'r12':
+        elif fmt not in ['r12', 'wr12']:
             raise Exception("The Green's function has an invalid format: '{}'. Expected '(s)12' or '(s)r12'.".format(fmt))
 
         self.format = fmt
@@ -158,6 +163,15 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
 
         self.ui.sliderRadius.setMaximum(self.gf.nr-1)
         self.ui.sliderRadius.setTickInterval(max(1, int(np.round(self.gf.nr / 20))))
+
+        if fmt == 'wr12':
+            self.ui.sliderWavelength.setMaximum(self.gf._wavelengths.size-1)
+
+            self.sliderWavelengthChanged()
+        else:
+            self.ui.sliderWavelength.hide()
+            self.ui.lblWavelengthLbl.hide()
+            self.ui.lblWavelength.hide()
 
         self.ui.lblParam1Name.setText('Parameter 1 ({}):'.format(self.gf._param1name))
         self.ui.lblParam2Name.setText('Parameter 2 ({}):'.format(self.gf._param2name))
@@ -240,6 +254,14 @@ class GreensFunctionR12(QtWidgets.QMainWindow):
         idx = self.ui.sliderRadius.value()
         self.ui.lblRIndex.setText(str(idx))
         self.ui.lblR.setText('r = {:.4}'.format(self.gf._r[idx]))
+
+        if self.ax is not None:
+            self.redrawFigure()
+
+
+    def sliderWavelengthChanged(self):
+        idx = self.ui.sliderWavelength.value()
+        self.ui.lblWavelength.setText('{} nm'.format(self.gf._wavelengths[idx]/1e-9))
 
         if self.ax is not None:
             self.redrawFigure()
