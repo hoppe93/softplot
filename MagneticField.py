@@ -86,11 +86,24 @@ class MagneticField:
         # Convert array to string (MAT-files store strings as
         # arrays with 2 bytes per character)
         if filename.endswith('.mat'):
-            tos = lambda v : "".join(map(chr, v[:,:][:,0].tolist()))
+            def tos(v):
+                if v.dtype == 'O':
+                    return str(v[...])
+                else:
+                    return "".join(map(chr, v[:,:][:,0].tolist()))
         else:
             def tos(v):
                 if v.dtype == 'O':
-                    return v[:][0]
+                    if v.shape == ():
+                        s = v[()]
+                        if type(s) == bytes:
+                            s = s.decode('utf-8')
+                        return s
+                    else:
+                        s = v[:][0]
+                        if type(s) == bytes:
+                            s = s.decode('utf-8')
+                        return s
                 elif v.dtype == 'uint16':
                     return v[:].tostring().decode('utf-16')
                 else:
