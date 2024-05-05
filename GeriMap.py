@@ -48,8 +48,10 @@ def registerGeriMap(transparencyThreshold=0.4):
         gmap_r[:,-1] = np.concatenate((a,b), axis=None)
         gerimap_r = LinearSegmentedColormap.from_list('GeriMap_r', gmap_r)
 
-    plt.register_cmap(cmap=gerimap)
-    plt.register_cmap(cmap=gerimap_r)
+    cmaps = plt.colormaps()
+    if gerimap.name not in cmaps:
+        plt.register_cmap(cmap=gerimap)
+        plt.register_cmap(cmap=gerimap_r)
 
     return gerimap, gerimap_r
 
